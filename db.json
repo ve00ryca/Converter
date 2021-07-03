@@ -1,0 +1,55 @@
+{
+    "units": [
+      {
+        "id": "length", 
+        "unit_name": "length",
+        "category": "length", 
+        "title": "Length Converter",
+        "description": "Convert units for length and distance",
+        "options": [
+          "select unit",
+          "nanometer (nm)",
+          "micrometer / micron (μm)",
+          "milimeter (mm)",
+          "centimeter (cm)",
+          "decimeter (dm)",
+          "meter (m)",
+          "kilometer (km)",
+          "inch (in)",
+          "feet (ft)",
+          "yard (yd)",
+          "mile (mi)"
+        ]
+      },
+      {
+        "id": "volume",
+        "unit_name": "volume",
+        "category": "volume",
+        "title": "Volume Converter",
+        "description": "Convert units for volume",
+        "options": [
+          "select unit",
+          "cubic milimeter",
+          "cubic centimeter",
+          "cubic decimeter",
+          "cubic meter",
+          "cubic kilometer",
+          "mililiter",
+          "liter"
+        ]
+      },
+      {
+        "id": "temperature",
+        "unit_name": "temperature",
+        "category": "temperature",
+        "title": "Temperature Converter",
+        "description": "Convert units for temperature",
+        "options": [
+          "select unit",
+          "Celsius (°C)",
+          "Fahrenheit (°F)",
+          "Kelvin (K)"
+        ]
+      }
+    ]
+  }
