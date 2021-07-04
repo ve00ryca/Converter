@@ -212,13 +212,15 @@ export default {
      *
      *******************************************************/
     numberExponentToLarge(numIn) {
+      console.log('Enter numberExponentToLarge()')
       numIn += '' // To cater to numric entries
       let sign = '' // To remember the number sign
       numIn.charAt(0) == '-' && ((numIn = numIn.substring(1)), (sign = '-')) // remove - sign & remember it
       let str = numIn.split(/e/gi) // Split numberic string at e or E
       if (str.length < 2) return sign + numIn // Not an Exponent Number? Exit with orginal Num back
       let power = str[1] // Get Exponent (Power) (could be + or -)
-      if (power == 0 || power == -0) return sign + str[0] // If 0 exponents (i.e. 0|-0|+0) then that's an easy one
+
+      //if (power == 0 || power == -0) return sign + str[0] // If 0 exponents (i.e. 0|-0|+0) then that's an easy one
 
       let deciSp = (1.1).toLocaleString().substring(1, 2) // Get Deciaml Separator
       str = str[0].split(deciSp) // Split the Base Number into LH and RH at the decimal point
@@ -514,7 +516,7 @@ export default {
         console.log(`Convert to toUnit kilometer (km)`)
         return inputInMeter / (1000 * tensPow)
       } else if (this.toUnit === 'inch (in)') {
-        console.log(`Convert to toUnit inch (\")`)
+        console.log(`Convert to toUnit inch (")`)
         return (inputInMeter * 39370078740157) / (Math.pow(10, 12) * tensPow) // 1m = 39.370078740157 inch 3.28084
       } else if (this.toUnit === 'feet (ft)') {
         console.log(`Convert to toUnit foot (ft)`)
@@ -784,7 +786,7 @@ export default {
           )
           //step 3: convert from celsius to the desired unit and then format the output
           this.output = this.temperatureConvFromCelsius(
-            inputCelsius,
+            inputInCelsius,
             tensPowCelsius
           )
           this.output = this.insertWhiteSpaces(this.output)
