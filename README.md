@@ -1,4 +1,6 @@
-# converter
+# Converter
+
+![name-of-you-image](https://github.com/ve00ryca/Converter/blob/master/src/assets/Site-Preview.JPG?raw=true)
 
 ## Project setup
 
