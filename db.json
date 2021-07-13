@@ -4,7 +4,7 @@
         "id": "length", 
         "unit_name": "length",
         "category": "length", 
-        "title": "Length Converter",
+        "title": "LENGTH",
         "description": "Convert units for length and distance",
         "options": [
           "select unit",
@@ -25,7 +25,7 @@
         "id": "volume",
         "unit_name": "volume",
         "category": "volume",
-        "title": "Volume Converter",
+        "title": "VOLUME",
         "description": "Convert units for volume",
         "options": [
           "select unit",
@@ -42,7 +42,7 @@
         "id": "temperature",
         "unit_name": "temperature",
         "category": "temperature",
-        "title": "Temperature Converter",
+        "title": "TEMPERATURE",
         "description": "Convert units for temperature",
         "options": [
           "select unit",

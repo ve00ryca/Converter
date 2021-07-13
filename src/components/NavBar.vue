@@ -1,6 +1,17 @@
 <template>
   <div id="nav" class="nav">
-    <router-link to="/" class="brand"> C°nverter</router-link>
+    <router-link to="/" class="brand" id="brand">
+      C<BaseIcon
+        name="refresh-ccw"
+        width="6vw"
+        height="6vw"
+        style="
+          border-radius: 50%;
+          border: 2px dotted var(--custom-gray-light);
+          padding: 8px;
+        "
+      />nverter</router-link
+    >
     <div class="nav">
       <router-link :to="{ name: 'home' }"> # all units</router-link>
     </div>
@@ -16,6 +27,11 @@ export default {
 <style lang="scss" scoped>
 #nav {
   padding: 30px;
+  height: 30vh;
+
+  #brand {
+    font-size: 8vw;
+  }
 
   a {
     text-decoration: none;
@@ -44,14 +60,12 @@ export default {
   font-family: 'Montserrat', sans-serif;
   font-weight: 700;
   font-size: 1.5em;
-  //color: var(--custom-blue-light);
   text-decoration: none;
   margin-right: 1%;
 }
 .nav .nav-item {
   box-sizing: border-box;
   margin: 0 5px;
-  //color: rgba(0, 0, 0, 0.5);
   text-decoration: none;
 }
 .nav .nav-item.router-link-exact-active {

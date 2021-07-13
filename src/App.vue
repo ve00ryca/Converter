@@ -1,14 +1,5 @@
 <template>
   <div id="app">
-    <!-- <div id="nav">
-      <router-link :to="{ name: 'home' }">Home</router-link> |
-      <router-link :to="{ name: 'length-converter' }">Length</router-link> |
-      <router-link :to="{ name: 'volume-converter' }">Volume</router-link> |
-      <router-link :to="{ name: 'temperature-converter' }"
-        >Temperature</router-link
-      >
-      |
-    </div> -->
     <NavBar />
     <router-view />
   </div>

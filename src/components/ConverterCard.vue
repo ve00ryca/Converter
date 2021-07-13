@@ -20,29 +20,12 @@
 export default {
   props: {
     unit: Object /** info from DB is a prop: {} - receiving each object from the parrent through the DB+API call(axios),
-    instead of creating n same components each one containg static info in data() like that: */,
+    instead of creating n same components each one containg static info in data() */,
   },
-  //   data() {
-  //     return {
-  //       event: {
-  //         id: 1,
-  //         title: 'Park Cleanup',
-  //         time: '6:00',
-  //         date: 'Tue May 15 2018',
-  //         attendees: [
-  //           { id: 'abc123', name: 'John Doe' },
-  //           { id: 'def456', name: 'Doe John' }
-  //         ]
-  //       }
-  //     }
-  //   }
 }
 </script>
 
 <style lang="scss" scoped>
-/* background: #285063;
-background: #285063;
-background: #0ba1e8; */
 .event-card {
   color: var(--custom-white);
   padding: 20px;
