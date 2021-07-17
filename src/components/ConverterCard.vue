@@ -1,9 +1,6 @@
 <template>
   <div class="converter-card">
-    <router-link
-      :to="{ name: 'converter', params: { unit_name: unit.unit_name } }"
-      class="event-link"
-    >
+    <router-link :to="{ name: 'converter', params: { unit_name: unit.unit_name } }" class="event-link">
       <div class="event-card -shadow">
         <span class="eyebrow"
           ><span>#{{ unit.category }}:</span> {{ unit.description }}</span

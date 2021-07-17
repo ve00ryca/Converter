@@ -82,8 +82,6 @@ export default {
      * @return  {string} userInput without white spaces.
      */
     removeWhiteSpaces(userInput) {
-      console.log('Enter removeWhiteSpaces()')
-      console.log(`without whitespaces: ${userInput.replace(/\s/g, '')}`)
       return userInput.replace(/\s/g, '')
     },
 
@@ -95,24 +93,22 @@ export default {
      *                   floating point numbers).
      */
     removeRedundantZeros(userInput) {
-      console.log('Enter removeRedundantZeros()')
-      // If input contains a decimal point, it might be '.' or ',' - both are valid
+      // Both decimal point and comma are considered as valid here
+
       if (userInput.match(/^(0+(\.|,)\d+)$/g)) {
-        //Only for decimal point input:
-        //Exactly one leading zero must remain if it is placed directly before the decimal point (e.g. 000.12 -> 0.12)
+        // Exactly one leading zero before the decimal separator
+        // input is float
         userInput = userInput.replace(/^(0+)/g, '0')
-        console.log(`Case 1.1 - without leading zeros: /^(0+(\\.|,)\\d+)$/g`)
       }
       if (userInput.match(/^(0+\d+)/g)) {
-        //e.g. 0012 -> 12 or 0012.12 -> 12.12
+        // Remove leading zeros before another digit
+        // input is float or int, e.g. 0012 -> 12 or 0012.12 -> 12.12
         userInput = userInput.replace(/^(0+)/g, '')
-        console.log(`Case 1.2 - without leading zeros: /^(0+\\d+)/g `)
       }
       if (userInput.match(/(\.|,)/) && !userInput.match(/e/gi)) {
-        //Only for decimal point input:
-        //do not remove zeros in the end if the input is written in E-notation
+        // Remove zeros in the end after decimal separator unless the input is written in E-notation
+        // intput is float (e.g. 1.1000 -> 1.1) or in E-notation (e.g 1.1e+1000 -> as is)
         userInput = userInput.replace(/0+$|((\.|,)0+$)/, '')
-        console.log(`Case 2 - without ending zeros after decimal point`)
       }
       return userInput
     },
@@ -126,7 +122,6 @@ export default {
      *                    permitted, i.e. having 100,000,000.1 the output would be NaN).
      */
     isValidFloatingPointInput(userInput) {
-      console.log(`Enter isValidInputWithDecimalPoint()`)
       if (
         userInput.match(/\./g) !== null &&
         userInput.match(/\./g).length > 1
@@ -156,7 +151,6 @@ export default {
      * @return  {string}  userInput with decimal point separator or userInput as-is if it is an integer number.
      */
     replaceDecimalCommaByDecimalPoint(userInput) {
-      console.log(`Enter replaceDecimalCommaByDecimalPoint()`)
       return userInput.indexOf(',') !== -1
         ? userInput.replace(',', '.')
         : userInput
@@ -178,8 +172,6 @@ export default {
      * results: (i.e. 1.100000000004 instead of 1.1). To try using integers instead.
      */
     floatingPointNumberToObject(inputStr) {
-      console.log(`Enter floatingPointNumberToObject()`)
-      console.log(`inputStr ${inputStr}`)
       let decimalPointIndex = inputStr.indexOf('.')
       if (decimalPointIndex === -1) {
         // ---- if inputStr isn't a real number, return it as is; tenPow is then 1
@@ -206,7 +198,6 @@ export default {
      * Notes: No check is made for NaN or undefined inputs
      */
     exponentToLarge(numIn) {
-      console.log('Enter exponentToLarge()')
       numIn += '' // To cater to numric entries
       let sign = '' // To remember the number sign
       numIn.charAt(0) == '-' && ((numIn = numIn.substring(1)), (sign = '-')) // remove - sign & remember it
@@ -247,12 +238,7 @@ export default {
      * Notes: Should't be applied to the digits after the decimal point, if the argument is a floating point number.
      */
     insertWhiteSpaces(inputOrOutput) {
-      console.log('Enter insertWhiteSpaces()')
-      console.log(
-        `type of parameter in insertWhiteSpaces: ${typeof inputOrOutput} `
-      )
       let num_parts = inputOrOutput.toString().split('.')
-      console.log(`splited parts: ${num_parts}`)
       num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
       return num_parts.join('.')
     },
@@ -267,34 +253,22 @@ export default {
      *
      * Notes: First checks for input in E-notation and for floating point input and calls the respective functions.
      * Then the input is first converted to meter and the result is passed as an argument in the helper function
-     * lengthConvFromMeter(): the conversion to the desired unit is calculated there.
+     * meterToTargetUnit(): the conversion to the desired unit is calculated there.
      * Finally calls formatter function for the output which sets white spaces as thousand separators if necessary.
      */
     lengthConverter(input, tensPow) {
-      console.log('')
-      console.log('Enter lengthConverter()')
-      console.log(
-        `input: ${input}, tensPow: ${tensPow}, typeof input: ${typeof input}, typeof tensPow: ${typeof tensPow}`
-      )
       if (this.toUnit === this.fromUnit) {
-        console.log('this.toUnit===this.fromUnit')
-        console.log(
-          `this.output = input / tensPow: ${(this.output = input / tensPow)}`
-        )
-        this.output = input / tensPow // str -> int
-        this.output = this.insertWhiteSpaces(this.output) // int -> str
+        this.output = this.insertWhiteSpaces(input / tensPow)
         return
       }
-      let inputInMeter = ''
-      let tensPowMeter = 0
-      let resultFloatingPointToObject = {}
+      let output = '',
+        inputInMeter = '',
+        tensPowMeter = 0,
+        resultFloatingPointToObject = {}
 
       switch (this.fromUnit) {
         case 'nanometer (nm)':
           inputInMeter = (input / (Math.pow(10, 9) * tensPow)).toString()
-
-          console.log(`Converted to meter (m)`)
-
           inputInMeter = this.exponentToLarge(inputInMeter)
           resultFloatingPointToObject = this.floatingPointNumberToObject(
             inputInMeter
@@ -302,19 +276,11 @@ export default {
           inputInMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
           tensPowMeter = resultFloatingPointToObject.tensPow
 
-          console.log(
-            `SECOND result from floatingPointNumberToObject is inputInMeter: ${inputInMeter}, tensPowMeter:
-            ${tensPowMeter}`
-          )
-
-          this.output = this.lengthConvFromMeter(inputInMeter, tensPowMeter)
-          this.output = this.insertWhiteSpaces(this.output)
+          output = this.meterToTargetUnit(inputInMeter, tensPowMeter)
+          this.output = this.insertWhiteSpaces(output)
           break
         case 'micrometer / micron (μm)':
           inputInMeter = (input / (Math.pow(10, 6) * tensPow)).toString()
-
-          console.log(`Converted to meter (m)`)
-
           inputInMeter = this.exponentToLarge(inputInMeter)
           resultFloatingPointToObject = this.floatingPointNumberToObject(
             inputInMeter
@@ -322,19 +288,11 @@ export default {
           inputInMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
           tensPowMeter = resultFloatingPointToObject.tensPow
 
-          console.log(
-            `SECOND result from floatingPointNumberToObject is inputInMeter: ${inputInMeter}, tensPowMeter: 
-            ${tensPowMeter}`
-          )
-
-          this.output = this.lengthConvFromMeter(inputInMeter, tensPowMeter)
-          this.output = this.insertWhiteSpaces(this.output)
+          output = this.meterToTargetUnit(inputInMeter, tensPowMeter)
+          this.output = this.insertWhiteSpaces(output)
           break
         case 'milimeter (mm)':
           inputInMeter = (input / (1000 * tensPow)).toString()
-
-          console.log(`Converted to meter (m)`)
-
           inputInMeter = this.exponentToLarge(inputInMeter)
           resultFloatingPointToObject = this.floatingPointNumberToObject(
             inputInMeter
@@ -342,19 +300,11 @@ export default {
           inputInMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
           tensPowMeter = resultFloatingPointToObject.tensPow
 
-          console.log(
-            `SECOND result from floatingPointNumberToObject is inputInMeter: ${inputInMeter}, tensPowMeter: 
-            ${tensPowMeter}`
-          )
-
-          this.output = this.lengthConvFromMeter(inputInMeter, tensPowMeter)
-          this.output = this.insertWhiteSpaces(this.output)
+          output = this.meterToTargetUnit(inputInMeter, tensPowMeter)
+          this.output = this.insertWhiteSpaces(output)
           break
         case 'centimeter (cm)':
           inputInMeter = (input / (100 * tensPow)).toString()
-
-          console.log(`Converted to meter (m)`)
-
           inputInMeter = this.exponentToLarge(inputInMeter)
           resultFloatingPointToObject = this.floatingPointNumberToObject(
             inputInMeter
@@ -362,19 +312,11 @@ export default {
           inputInMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
           tensPowMeter = resultFloatingPointToObject.tensPow
 
-          console.log(
-            `SECOND result from floatingPointNumberToObject is inputInMeter: ${inputInMeter}, tensPowMeter: 
-            ${tensPowMeter}`
-          )
-
-          this.output = this.lengthConvFromMeter(inputInMeter, tensPowMeter)
-          this.output = this.insertWhiteSpaces(this.output)
+          output = this.meterToTargetUnit(inputInMeter, tensPowMeter)
+          this.output = this.insertWhiteSpaces(output)
           break
         case 'decimeter (dm)':
           inputInMeter = (input / (10 * tensPow)).toString()
-
-          console.log(`Converted to meter (m)`)
-
           inputInMeter = this.exponentToLarge(inputInMeter)
           resultFloatingPointToObject = this.floatingPointNumberToObject(
             inputInMeter
@@ -382,23 +324,15 @@ export default {
           inputInMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
           tensPowMeter = resultFloatingPointToObject.tensPow
 
-          console.log(
-            `SECOND result from floatingPointNumberToObject is inputInMeter: ${inputInMeter}, tensPowMeter: 
-            ${tensPowMeter}`
-          )
-
-          this.output = this.lengthConvFromMeter(inputInMeter, tensPowMeter)
-          this.output = this.insertWhiteSpaces(this.output)
+          output = this.meterToTargetUnit(inputInMeter, tensPowMeter)
+          this.output = this.insertWhiteSpaces(output)
           break
         case 'meter (m)':
-          this.output = this.lengthConvFromMeter(input, tensPow)
-          this.output = this.insertWhiteSpaces(this.output)
+          output = this.meterToTargetUnit(input, tensPow)
+          this.output = this.insertWhiteSpaces(output)
           break
         case 'kilometer (km)':
           inputInMeter = ((input * 1000) / tensPow).toString()
-
-          console.log(`Converted to meter (m)`)
-
           inputInMeter = this.exponentToLarge(inputInMeter)
           resultFloatingPointToObject = this.floatingPointNumberToObject(
             inputInMeter
@@ -406,19 +340,11 @@ export default {
           inputInMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
           tensPowMeter = resultFloatingPointToObject.tensPow
 
-          console.log(
-            `SECOND result from floatingPointNumberToObject is inputInMeter: ${inputInMeter}, tensPowMeter: 
-            ${tensPowMeter}`
-          )
-
-          this.output = this.lengthConvFromMeter(inputInMeter, tensPowMeter)
-          this.output = this.insertWhiteSpaces(this.output)
+          output = this.meterToTargetUnit(inputInMeter, tensPowMeter)
+          this.output = this.insertWhiteSpaces(output)
           break
         case 'inch (in)':
           inputInMeter = ((input * 254) / (10000 * tensPow)).toString() // 1 in = 0.0254 m
-
-          console.log(`Converted to meter (m)`)
-
           inputInMeter = this.exponentToLarge(inputInMeter)
           resultFloatingPointToObject = this.floatingPointNumberToObject(
             inputInMeter
@@ -426,21 +352,14 @@ export default {
           inputInMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
           tensPowMeter = resultFloatingPointToObject.tensPow
 
-          console.log(
-            `SECOND result from floatingPointNumberToObject is inputInMeter: ${inputInMeter}, tensPowMeter: 
-            ${tensPowMeter}`
-          )
-
-          this.output = this.lengthConvFromMeter(inputInMeter, tensPowMeter)
-          this.output = this.insertWhiteSpaces(this.output)
+          output = this.meterToTargetUnit(inputInMeter, tensPowMeter)
+          this.output = this.insertWhiteSpaces(output)
           break
         case 'feet (ft)':
           inputInMeter = (
             (input * 3048) /
             (tensPow * Math.pow(10, 4))
           ).toString() // 1 ft = 0.3048 m
-          console.log(`Converted to meter (m)`)
-
           inputInMeter = this.exponentToLarge(inputInMeter)
           resultFloatingPointToObject = this.floatingPointNumberToObject(
             inputInMeter
@@ -448,22 +367,14 @@ export default {
           inputInMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
           tensPowMeter = resultFloatingPointToObject.tensPow
 
-          console.log(
-            `SECOND result from floatingPointNumberToObject is inputInMeter: ${inputInMeter}, tensPowMeter: 
-            ${tensPowMeter}`
-          )
-
-          this.output = this.lengthConvFromMeter(inputInMeter, tensPowMeter)
-          this.output = this.insertWhiteSpaces(this.output)
+          output = this.meterToTargetUnit(inputInMeter, tensPowMeter)
+          this.output = this.insertWhiteSpaces(output)
           break
         case 'yard (yd)':
           inputInMeter = (
             (input * 9144) /
             (tensPow * Math.pow(10, 4))
           ).toString() // 1 yd = 0.9144 m
-
-          console.log(`Converted to meter (m)`)
-
           inputInMeter = this.exponentToLarge(inputInMeter)
           resultFloatingPointToObject = this.floatingPointNumberToObject(
             inputInMeter
@@ -471,22 +382,14 @@ export default {
           inputInMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
           tensPowMeter = resultFloatingPointToObject.tensPow
 
-          console.log(
-            `SECOND result from floatingPointNumberToObject is inputInMeter: ${inputInMeter}, tensPowMeter: 
-            ${tensPowMeter}`
-          )
-
-          this.output = this.lengthConvFromMeter(inputInMeter, tensPowMeter)
-          this.output = this.insertWhiteSpaces(this.output)
+          output = this.meterToTargetUnit(inputInMeter, tensPowMeter)
+          this.output = this.insertWhiteSpaces(output)
           break
         case 'mile (mi)':
           inputInMeter = (
             (input * 1609344) /
             (tensPow * Math.pow(10, 3))
           ).toString() // 1 mi = 1 609.344 m
-
-          console.log(`Converted to meter (m)`)
-
           inputInMeter = this.exponentToLarge(inputInMeter)
           resultFloatingPointToObject = this.floatingPointNumberToObject(
             inputInMeter
@@ -494,13 +397,8 @@ export default {
           inputInMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
           tensPowMeter = resultFloatingPointToObject.tensPow
 
-          console.log(
-            `SECOND result from floatingPointNumberToObject is inputInMeter: ${inputInMeter}, tensPowMeter: 
-            ${tensPowMeter}`
-          )
-
-          this.output = this.lengthConvFromMeter(inputInMeter, tensPowMeter)
-          this.output = this.insertWhiteSpaces(this.output)
+          output = this.meterToTargetUnit(inputInMeter, tensPowMeter)
+          this.output = this.insertWhiteSpaces(output)
           break
         default:
           alert('Please choose units from the dropdown menus')
@@ -515,7 +413,7 @@ export default {
      * @param {number} tensPow 10 raised to the n-th power, where n is the number of digits after the decimal point.
      * @return {string} The output converted into the desired unit.
      */
-    lengthConvFromMeter(inputInMeter, tensPow) {
+    meterToTargetUnit(inputInMeter, tensPow) {
       /**
        * Floating point arithmetic:
        * GOAL: to have two integer operands at each step -> the brackets are put in a way that this is achieved:
@@ -526,38 +424,27 @@ export default {
        */
 
       if (this.toUnit === 'nanometer (nm)') {
-        console.log(`Convert to toUnit nanometer (nm)`)
         return (inputInMeter * Math.pow(10, 9)) / tensPow
       } else if (this.toUnit === 'micrometer / micron (μm)') {
-        console.log(`Convert to toUnit micrometer / micron (μm)`)
         return (inputInMeter * Math.pow(10, 6)) / tensPow
       } else if (this.toUnit === 'milimeter (mm)') {
-        console.log(`Convert to toUnit milimeter (mm)`)
         return (inputInMeter * 1000) / tensPow
       } else if (this.toUnit === 'centimeter (cm)') {
-        console.log(`Convert to toUnit centimeter (cm)`)
         return (inputInMeter * 100) / tensPow
       } else if (this.toUnit === 'decimeter (dm)') {
-        console.log(`Convert to toUnit decimeter (dm)`)
         return (inputInMeter * 10) / tensPow
       } else if (this.toUnit === 'kilometer (km)') {
-        console.log(`Convert to toUnit kilometer (km)`)
         return inputInMeter / (1000 * tensPow)
       } else if (this.toUnit === 'inch (in)') {
-        console.log(`Convert to toUnit inch (")`)
         return (inputInMeter * 3937007874015748) / (Math.pow(10, 14) * tensPow) // 1m = 39.37007874015748 in
       } else if (this.toUnit === 'feet (ft)') {
-        console.log(`Convert to toUnit foot (ft)`)
         return (inputInMeter * 3280839895013123) / (Math.pow(10, 15) * tensPow) // 1m = 3.280839895013123 ft
       } else if (this.toUnit === 'yard (yd)') {
-        console.log(`Convert to toUnit yard (yd)`)
         return (inputInMeter * 10936132983) / (Math.pow(10, 10) * tensPow) // 1m = 1.0936132983 yd
       } else if (this.toUnit === 'mile (mi)') {
-        console.log(`Convert to toUnit mile (mi)`)
         return (inputInMeter * 62137119223733) / (Math.pow(10, 17) * tensPow) // 1m =  0.0062137119223733 mi
       } else {
         // if (this.toUnit == 'meter (m)')
-        console.log(`Convert to toUnit meter (m)`)
         return inputInMeter / tensPow
       }
     },
@@ -572,33 +459,21 @@ export default {
      *
      * Notes: First checks for input in E-notation and for floating point input and calls the respective functions.
      * Then the input is first converted to cubic meter and the result is passed as an argument in the helper function
-     * volumeConvFromCubicMeter(): the conversion to the desired unit is calculated there.
+     * cubicMeterToTargetUnit(): the conversion to the desired unit is calculated there.
      * Finally calls formatter function for the output which sets white spaces as thousand separators if necessary.
      */
     volumeConverter(input, tensPow) {
-      console.log('')
-      console.log('Enter volumeConverter()')
-      console.log(
-        `input: ${input}, tensPow: ${tensPow}, typeof input: ${typeof input}, typeof tensPow: ${typeof tensPow}`
-      )
       if (this.toUnit === this.fromUnit) {
-        console.log('this.toUnit === this.fromUnit')
-        console.log(
-          `this.output = input / tensPow: ${(this.output = input / tensPow)}`
-        )
-        this.output = input / tensPow //str -> int
-        this.output = this.insertWhiteSpaces(this.output) // int -> str
+        this.output = this.insertWhiteSpaces(input / tensPow)
         return
       }
-      let inputInCubicMeter = ''
-      let tensPowCubicMeter = 0
-      let resultFloatingPointToObject = {}
+      let output = '',
+        inputInCubicMeter = '',
+        tensPowCubicMeter = 0,
+        resultFloatingPointToObject = {}
       switch (this.fromUnit) {
         case 'cubic milimeter':
           inputInCubicMeter = (input / (Math.pow(10, 9) * tensPow)).toString()
-
-          console.log(`Converted to cubic meter`)
-
           inputInCubicMeter = this.exponentToLarge(inputInCubicMeter)
           resultFloatingPointToObject = this.floatingPointNumberToObject(
             inputInCubicMeter
@@ -607,22 +482,14 @@ export default {
             resultFloatingPointToObject.inputStrWithoutDecimalPoint
           tensPowCubicMeter = resultFloatingPointToObject.tensPow
 
-          console.log(
-            `SECOND result from floatingPointNumberToObject is inputInCubicMeter: ${inputInCubicMeter}, 
-            tensPowCubicMeter: ${tensPowCubicMeter}`
-          )
-
-          this.output = this.volumeConvFromCubicMeter(
+          output = this.cubicMeterToTargetUnit(
             inputInCubicMeter,
             tensPowCubicMeter
           )
-          this.output = this.insertWhiteSpaces(this.output)
+          this.output = this.insertWhiteSpaces(output)
           break
         case 'cubic centimeter':
           inputInCubicMeter = (input / (Math.pow(10, 6) * tensPow)).toString()
-
-          console.log(`Converted to cubic meter`)
-
           inputInCubicMeter = this.exponentToLarge(inputInCubicMeter)
           resultFloatingPointToObject = this.floatingPointNumberToObject(
             inputInCubicMeter
@@ -631,22 +498,14 @@ export default {
             resultFloatingPointToObject.inputStrWithoutDecimalPoint
           tensPowCubicMeter = resultFloatingPointToObject.tensPow
 
-          console.log(
-            `SECOND result from floatingPointNumberToObject is inputInCubicMeter: ${inputInCubicMeter}, 
-            tensPowCubicMeter: ${tensPowCubicMeter}`
-          )
-
-          this.output = this.volumeConvFromCubicMeter(
+          output = this.cubicMeterToTargetUnit(
             inputInCubicMeter,
             tensPowCubicMeter
           )
-          this.output = this.insertWhiteSpaces(this.output)
+          this.output = this.insertWhiteSpaces(output)
           break
         case 'cubic decimeter':
           inputInCubicMeter = (input / (1000 * tensPow)).toString()
-
-          console.log(`Converted to cubic meter`)
-
           inputInCubicMeter = this.exponentToLarge(inputInCubicMeter)
           resultFloatingPointToObject = this.floatingPointNumberToObject(
             inputInCubicMeter
@@ -655,26 +514,18 @@ export default {
             resultFloatingPointToObject.inputStrWithoutDecimalPoint
           tensPowCubicMeter = resultFloatingPointToObject.tensPow
 
-          console.log(
-            `SECOND result from floatingPointNumberToObject is inputInCubicMeter: ${inputInCubicMeter}, 
-            tensPowCubicMeter: ${tensPowCubicMeter}`
-          )
-
-          this.output = this.volumeConvFromCubicMeter(
+          output = this.cubicMeterToTargetUnit(
             inputInCubicMeter,
             tensPowCubicMeter
           )
-          this.output = this.insertWhiteSpaces(this.output)
+          this.output = this.insertWhiteSpaces(output)
           break
         case 'cubic meter':
-          this.output = this.volumeConvFromCubicMeter(input, tensPow)
-          this.output = this.insertWhiteSpaces(this.output)
+          output = this.cubicMeterToTargetUnit(input, tensPow)
+          this.output = this.insertWhiteSpaces(output)
           break
         case 'cubic kilometer':
           inputInCubicMeter = ((input * Math.pow(10, 9)) / tensPow).toString()
-
-          console.log(`Converted to cubic meter`)
-
           inputInCubicMeter = this.exponentToLarge(inputInCubicMeter)
           resultFloatingPointToObject = this.floatingPointNumberToObject(
             inputInCubicMeter
@@ -683,22 +534,14 @@ export default {
             resultFloatingPointToObject.inputStrWithoutDecimalPoint
           tensPowCubicMeter = resultFloatingPointToObject.tensPow
 
-          console.log(
-            `SECOND result from floatingPointNumberToObject is inputInCubicMeter: ${inputInCubicMeter}, 
-            tensPowCubicMeter: ${tensPowCubicMeter}`
-          )
-
-          this.output = this.volumeConvFromCubicMeter(
+          output = this.cubicMeterToTargetUnit(
             inputInCubicMeter,
             tensPowCubicMeter
           )
-          this.output = this.insertWhiteSpaces(this.output)
+          this.output = this.insertWhiteSpaces(output)
           break
         case 'mililiter':
           inputInCubicMeter = (input / (Math.pow(10, 6) * tensPow)).toString()
-
-          console.log(`Converted to cubic meter`)
-
           inputInCubicMeter = this.exponentToLarge(inputInCubicMeter)
           resultFloatingPointToObject = this.floatingPointNumberToObject(
             inputInCubicMeter
@@ -707,22 +550,14 @@ export default {
             resultFloatingPointToObject.inputStrWithoutDecimalPoint
           tensPowCubicMeter = resultFloatingPointToObject.tensPow
 
-          console.log(
-            `SECOND result from floatingPointNumberToObject is inputInCubicMeter: ${inputInCubicMeter}, 
-            tensPowCubicMeter: ${tensPowCubicMeter}`
-          )
-
-          this.output = this.volumeConvFromCubicMeter(
+          output = this.cubicMeterToTargetUnit(
             inputInCubicMeter,
             tensPowCubicMeter
           )
-          this.output = this.insertWhiteSpaces(this.output)
+          this.output = this.insertWhiteSpaces(output)
           break
         case 'liter':
           inputInCubicMeter = (input / (1000 * tensPow)).toString()
-
-          console.log(`Converted to cubic meter`)
-
           inputInCubicMeter = this.exponentToLarge(inputInCubicMeter)
           resultFloatingPointToObject = this.floatingPointNumberToObject(
             inputInCubicMeter
@@ -731,16 +566,11 @@ export default {
             resultFloatingPointToObject.inputStrWithoutDecimalPoint
           tensPowCubicMeter = resultFloatingPointToObject.tensPow
 
-          console.log(
-            `SECOND result from floatingPointNumberToObject is inputInCubicMeter: ${inputInCubicMeter}, 
-            tensPowCubicMeter: ${tensPowCubicMeter}`
-          )
-
-          this.output = this.volumeConvFromCubicMeter(
+          output = this.cubicMeterToTargetUnit(
             inputInCubicMeter,
             tensPowCubicMeter
           )
-          this.output = this.insertWhiteSpaces(this.output)
+          this.output = this.insertWhiteSpaces(output)
           break
         default:
           alert('Please choose units from the dropdown menus')
@@ -755,7 +585,7 @@ export default {
      * @param {number} tensPow 10 raised to the n-th power, where n is the number of digits after the decimal point.
      * @return {string} The output converted into the desired unit.
      */
-    volumeConvFromCubicMeter(inputInCubicMeter, tensPow) {
+    cubicMeterToTargetUnit(inputInCubicMeter, tensPow) {
       /**
        * Floating point arithmetic:
        * GOAL: to have two integer operands at each step -> the brackets are put in a way that this is achieved:
@@ -766,26 +596,19 @@ export default {
        */
 
       if (this.toUnit === 'cubic milimeter') {
-        console.log(`Convert to toUnit cubic milimeter`)
         return (inputInCubicMeter * Math.pow(10, 9)) / tensPow
       } else if (this.toUnit === 'cubic centimeter') {
-        console.log(`Convert to toUnit cubic centimeter`)
         return (inputInCubicMeter * Math.pow(10, 6)) / tensPow
       } else if (this.toUnit === 'cubic decimeter') {
-        console.log(`Convert to toUnit cubic decimeter`)
         return (inputInCubicMeter * 1000) / tensPow
       } else if (this.toUnit === 'cubic kilometer') {
-        console.log(`Convert to toUnit cubic kilometer`)
         return inputInCubicMeter / (Math.pow(10, 9) * tensPow)
       } else if (this.toUnit === 'mililiter') {
-        console.log(`Convert to toUnit mililiter`)
         return (inputInCubicMeter * Math.pow(10, 6)) / tensPow
       } else if (this.toUnit === 'liter') {
-        console.log(`Convert to toUnit liter`)
         return (inputInCubicMeter * 1000) / tensPow
       } else {
         // if (this.toUnit == 'cubic meter')
-        console.log(`Convert to toUnit cubic meter`)
         return inputInCubicMeter / tensPow
       }
     },
@@ -800,27 +623,18 @@ export default {
      *
      * Notes: First checks for input in E-notation and for floating point input and calls the respective functions.
      * Then the input is first converted to Celsius and the result is passed as an argument in the helper function
-     * temperatureConvFromCelsius(): the conversion to the desired unit is calculated there.
+     * celsiusToTargetUnit(): the conversion to the desired unit is calculated there.
      * Finally calls formatter function for the output which sets white spaces as thousand separators if necessary.
      */
     temperatureConverter(input, tensPow) {
-      console.log('')
-      console.log('Enter temperatureConverter()')
-      console.log(
-        `input: ${input}, tensPow: ${tensPow}, typeof input: ${typeof input}, typeof tensPow: ${typeof tensPow}`
-      )
       if (this.toUnit === this.fromUnit) {
-        console.log('this.toUnit === this.fromUnit')
-        console.log(
-          `this.output = input / tensPow: ${(this.output = input / tensPow)}`
-        )
-        this.output = input / tensPow // str -> int
-        this.output = this.insertWhiteSpaces(this.output) // int -> str
+        this.output = this.insertWhiteSpaces(input / tensPow) // int -> str
         return
       }
-      let inputInCelsius = ''
-      let tensPowCelsius = 0
-      let resultFloatingPointToObject = {}
+      let output = '',
+        inputInCelsius = '',
+        tensPowCelsius = 0,
+        resultFloatingPointToObject = {}
       switch (this.fromUnit) {
         /**
          * Floating point arithmetics in all cases:
@@ -832,9 +646,6 @@ export default {
          */
         case 'Fahrenheit (°F)':
           inputInCelsius = (((input / tensPow - 32) * 5) / 9).toString() // °C = (°F − 32) × 5/9
-
-          console.log(`Converted to celsius`)
-
           inputInCelsius = this.exponentToLarge(inputInCelsius)
           resultFloatingPointToObject = this.floatingPointNumberToObject(
             inputInCelsius
@@ -843,23 +654,11 @@ export default {
             resultFloatingPointToObject.inputStrWithoutDecimalPoint
           tensPowCelsius = resultFloatingPointToObject.tensPow
 
-          console.log(
-            `SECOND result from floatingPointNumberToObject is inputInCelsius: ${inputInCelsius}, tensPowCelsius: 
-            ${tensPowCelsius}`
-          )
-
-          this.output = this.temperatureConvFromCelsius(
-            inputInCelsius,
-            tensPowCelsius
-          )
-          this.output = this.insertWhiteSpaces(+this.output.toFixed(12))
+          output = this.celsiusToTargetUnit(inputInCelsius, tensPowCelsius)
+          this.output = this.insertWhiteSpaces(+output.toFixed(12))
           break
         case 'Kelvin (K)':
           inputInCelsius = (input / tensPow - 273.15).toString()
-
-          console.log(`Converted to celsius`)
-
-          console.log('LOOK HERE' + (parseFloat(input) - 273.15) / tensPow)
           inputInCelsius = this.exponentToLarge(inputInCelsius)
           resultFloatingPointToObject = this.floatingPointNumberToObject(
             inputInCelsius
@@ -868,20 +667,12 @@ export default {
             resultFloatingPointToObject.inputStrWithoutDecimalPoint
           tensPowCelsius = resultFloatingPointToObject.tensPow
 
-          console.log(
-            `SECOND result from floatingPointNumberToObject is inputInCelsius: 
-            ${inputInCelsius}, tensPowCelsius: ${tensPowCelsius}`
-          )
-
-          this.output = this.temperatureConvFromCelsius(
-            inputInCelsius,
-            tensPowCelsius
-          )
-          this.output = this.insertWhiteSpaces(+this.output.toFixed(12))
+          output = this.celsiusToTargetUnit(inputInCelsius, tensPowCelsius)
+          this.output = this.insertWhiteSpaces(+output.toFixed(12))
           break
         case 'Celsius (°C)':
-          this.output = this.temperatureConvFromCelsius(input, tensPow)
-          this.output = this.insertWhiteSpaces(this.output)
+          output = this.celsiusToTargetUnit(input, tensPow)
+          this.output = this.insertWhiteSpaces(output)
           break
         default:
           alert('Please choose units from the dropdown menus')
@@ -896,17 +687,13 @@ export default {
      * @param {number} tensPow 10 raised to the n-th power, where n is the number of digits after the decimal point.
      * @return {string} The output converted into the desired unit.
      */
-    temperatureConvFromCelsius(inputInCelsius, tensPow) {
-      console.log('Enter temperatureConvFromCelsius')
+    celsiusToTargetUnit(inputInCelsius, tensPow) {
       if (this.toUnit === 'Fahrenheit (°F)') {
-        console.log(`Convert to toUnit Fahrenheit (°F)`)
         return (inputInCelsius / tensPow) * 1.8 + 32 // °F = °C * 9 / 5 + 32
       } else if (this.toUnit === 'Kelvin (K)') {
-        console.log(`Convert to toUnit Kelvin (K)`)
         return inputInCelsius / tensPow + 273 + 0.15 // °K = °C + 273.15
       } else {
         // if (this.toUnit == 'Celsius (°C)')
-        console.log(`Convert to toUnit Celsius (°C)`)
         return inputInCelsius / tensPow
       }
     },
@@ -915,30 +702,30 @@ export default {
      * All functions are called from here.
      */
     main() {
-      /** Calculations will not be perfomed directly on this.input, but on let input instead.
+      /** Calculations will not be perfomed directly on this.input, but on local input variable instead.
        * this.input will only be formatted so that it looks better and easier to read.
        */
-      console.log(``)
-      console.log('Enter main()')
-      console.log('typeof this.input is ' + typeof this.input)
-      console.log('typeof this.output is ' + typeof this.output)
+
+      // If no units are selected an alert is displayed:
+      if (this.fromUnit === 'select unit' || this.toUnit === 'select unit') {
+        alert(
+          'Please choose ' + this.unit.id + ' units from the dropdown options.'
+        )
+        return
+      }
 
       this.input = this.removeWhiteSpaces(this.input)
       this.input = this.removeRedundantZeros(this.input)
-      let input = this.input
-      let tensPow = 1
+      let input = this.input,
+        tensPow = 1
 
-      // Following if-statement handles floating point input:
+      // The following if-statement handles floating point input:
       if (this.input.indexOf(',') !== -1 || this.input.indexOf('.') !== -1) {
         let isValid = this.isValidFloatingPointInput(this.input)
-        console.log(`isValidFloatingPointInput: ${isValid}`)
         if (!isValid) {
           return
         } else {
           this.input = this.replaceDecimalCommaByDecimalPoint(this.input)
-          console.log(
-            `replaceDecimalCommaByDecimalPoint: this.input: ${this.input}`
-          )
         }
         input = this.input
         input = this.exponentToLarge(input)
@@ -947,9 +734,6 @@ export default {
         )
         input = resultFloatingPointToObject.inputStrWithoutDecimalPoint
         tensPow = resultFloatingPointToObject.tensPow
-        console.log(
-          `result from floatingPointNumberToObject is input: ${input}, tensPow: ${tensPow}`
-        )
       }
 
       this.input = this.insertWhiteSpaces(this.input)
@@ -960,7 +744,7 @@ export default {
       } else if (this.unit.id === 'temperature') {
         this.temperatureConverter(input, tensPow)
       } else {
-        console.log('unit error')
+        console.log('unit error') // not needed: if there is an error here it'll be catched by axios when created()
       }
     },
   },

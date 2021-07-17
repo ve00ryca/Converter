@@ -8,18 +8,12 @@ import camelCase from 'lodash/camelCase'
 Vue.config.productionTip = false
 
 // Automatic registration of components:
-const requireComponent = require.context(
-  './components',
-  false,
-  /Base[A-Z]\w+\.(vue|js)$/
-)
+const requireComponent = require.context('./components', false, /Base[A-Z]\w+\.(vue|js)$/)
 
 requireComponent.keys().forEach((fileName) => {
   const componentConfig = requireComponent(fileName)
 
-  const componentName = upperFirst(
-    camelCase(fileName.replace(/^\.\/(.*)\.\w+$/, '$1'))
-  )
+  const componentName = upperFirst(camelCase(fileName.replace(/^\.\/(.*)\.\w+$/, '$1')))
 
   Vue.component(componentName, componentConfig.default || componentConfig)
 })

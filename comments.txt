@@ -1,0 +1,30 @@
+  /********************************************************
+     * Converts Exponential (e-Notation) Numbers to Decimals
+     ********************************************************
+     * @function numberExponentToLarge()
+     * @version  1.00
+     * @param   {string}  Number in exponent format.
+     *                   (other formats returned as is).
+     * @return  {string}  Returns a decimal number string.
+     * @author  Mohsen Alyafei
+     * @date    12 Jan 2020
+     *
+     * Notes: No check is made for NaN or undefined inputs
+     *
+     *******************************************************/
+
+     Message for next commit:
+Jest testing unit added as a dev dependency.
+------Converter.vue:
+console.logs are deleted.
+main() now checks if units are selected from the option list.
+Renaming converters' helper functions.
+
+
+    Message for next commit:
+Redundant comments are deleted.
+---------Converter.vue: ---------
+Some function names changed for more clarity. 
+Comment styling is improved.
+Temperature converting: floating point results are handled with toFixed(12) and then converted to number via '+' operator, to avoid fault floating point results.
+Length conversion improved with more accurate results for the following units: mi, yd, ft, in.

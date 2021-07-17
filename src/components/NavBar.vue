@@ -5,11 +5,7 @@
         name="refresh-ccw"
         width="6vw"
         height="6vw"
-        style="
-          border-radius: 50%;
-          border: 2px dotted var(--custom-gray-light);
-          padding: 8px;
-        "
+        style="border-radius: 50%; border: 2px dotted var(--custom-gray-light); padding: 8px"
       />nverter</router-link
     >
     <div class="nav">
