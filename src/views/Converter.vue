@@ -3,18 +3,21 @@
     <h1>{{ unit.title }}</h1>
     <div class="container">
       <div class="container-selection">
-        <input
-          type="text"
-          placeholder="enter"
-          v-model="input"
-          @click="output = 0"
-        />
+        <input type="text" placeholder="enter" v-model="input" @click="output = 0" />
         <select v-model="fromUnit">
           <option
             v-for="(option, index) in unit.options"
             :key="index"
             :value="option"
-            :disabled="index == 0 ? true : false"
+            :disabled="
+              option == 'select unit' ||
+              option == 'Metric Units:' ||
+              option == 'British Imperial and USC:' ||
+              option == 'Litre and multiples:' ||
+              option == 'British and U.S.:'
+                ? true
+                : false
+            "
           >
             {{ option }}
           </option>
@@ -30,7 +33,15 @@
             v-for="(option, index) in unit.options"
             :key="index"
             :value="option"
-            :disabled="index == 0 ? true : false"
+            :disabled="
+              option == 'select unit' ||
+              option == 'Metric Units:' ||
+              option == 'British Imperial and USC:' ||
+              option == 'Litre and multiples:' ||
+              option == 'British and U.S.:'
+                ? true
+                : false
+            "
           >
             {{ option }}
           </option>
@@ -122,10 +133,7 @@ export default {
      *                    permitted, i.e. having 100,000,000.1 the output would be NaN).
      */
     isValidFloatingPointInput(userInput) {
-      if (
-        userInput.match(/\./g) !== null &&
-        userInput.match(/\./g).length > 1
-      ) {
+      if (userInput.match(/\./g) !== null && userInput.match(/\./g).length > 1) {
         // more than one '.'
         this.output = 'NaN'
         return false
@@ -151,9 +159,7 @@ export default {
      * @return  {string}  userInput with decimal point separator or userInput as-is if it is an integer number.
      */
     replaceDecimalCommaByDecimalPoint(userInput) {
-      return userInput.indexOf(',') !== -1
-        ? userInput.replace(',', '.')
-        : userInput
+      return userInput.indexOf(',') !== -1 ? userInput.replace(',', '.') : userInput
     },
 
     /**
@@ -182,8 +188,7 @@ export default {
       } else {
         return {
           inputStrWithoutDecimalPoint:
-            inputStr.substring(0, decimalPointIndex) +
-            inputStr.substring(decimalPointIndex + 1, inputStr.length), //---- the number string without the '.'
+            inputStr.substring(0, decimalPointIndex) + inputStr.substring(decimalPointIndex + 1, inputStr.length), //---- the number string without the '.'
           tensPow: Math.pow(10, inputStr.length - decimalPointIndex - 1), //--- Math.pow(10, number of decimal places)
         }
       }
@@ -216,8 +221,7 @@ export default {
         // ------- Positive Exponents (Process the RH Base Part)
         if (power > baseRH.length) baseRH += '0'.repeat(power - baseRH.length) // Pad with "0" at RH
         baseRH = baseRH.slice(0, power) + deciSp + baseRH.slice(power) // Insert decSep at the correct place into RH base
-        if (baseRH.charAt(baseRH.length - 1) == deciSp)
-          baseRH = baseRH.slice(0, -1) // If decSep at RH end? => remove it
+        if (baseRH.charAt(baseRH.length - 1) == deciSp) baseRH = baseRH.slice(0, -1) // If decSep at RH end? => remove it
       } else {
         // ------- Negative Exponents (Process the LH Base Part)
         let num = Math.abs(power) - baseLH.length // Delta necessary 0's
@@ -267,12 +271,62 @@ export default {
         resultFloatingPointToObject = {}
 
       switch (this.fromUnit) {
+        // Metric units
+        // The power of 10 equals the power of the respective SI prefix
+        case 'yoctometer (ym)':
+          inputInMeter = (input / (Math.pow(10, 24) * tensPow)).toString()
+          inputInMeter = this.exponentToLarge(inputInMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInMeter)
+          inputInMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowMeter = resultFloatingPointToObject.tensPow
+
+          output = this.meterToTargetUnit(inputInMeter, tensPowMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'zeptometer (zm)':
+          inputInMeter = (input / (Math.pow(10, 21) * tensPow)).toString()
+          inputInMeter = this.exponentToLarge(inputInMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInMeter)
+          inputInMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowMeter = resultFloatingPointToObject.tensPow
+
+          output = this.meterToTargetUnit(inputInMeter, tensPowMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'attometer (am)':
+          inputInMeter = (input / (Math.pow(10, 18) * tensPow)).toString()
+          inputInMeter = this.exponentToLarge(inputInMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInMeter)
+          inputInMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowMeter = resultFloatingPointToObject.tensPow
+
+          output = this.meterToTargetUnit(inputInMeter, tensPowMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'femtometer (fm)':
+          inputInMeter = (input / (Math.pow(10, 15) * tensPow)).toString()
+          inputInMeter = this.exponentToLarge(inputInMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInMeter)
+          inputInMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowMeter = resultFloatingPointToObject.tensPow
+
+          output = this.meterToTargetUnit(inputInMeter, tensPowMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'picometer (pm)':
+          inputInMeter = (input / (Math.pow(10, 12) * tensPow)).toString()
+          inputInMeter = this.exponentToLarge(inputInMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInMeter)
+          inputInMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowMeter = resultFloatingPointToObject.tensPow
+
+          output = this.meterToTargetUnit(inputInMeter, tensPowMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
         case 'nanometer (nm)':
           inputInMeter = (input / (Math.pow(10, 9) * tensPow)).toString()
           inputInMeter = this.exponentToLarge(inputInMeter)
-          resultFloatingPointToObject = this.floatingPointNumberToObject(
-            inputInMeter
-          )
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInMeter)
           inputInMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
           tensPowMeter = resultFloatingPointToObject.tensPow
 
@@ -282,9 +336,7 @@ export default {
         case 'micrometer / micron (μm)':
           inputInMeter = (input / (Math.pow(10, 6) * tensPow)).toString()
           inputInMeter = this.exponentToLarge(inputInMeter)
-          resultFloatingPointToObject = this.floatingPointNumberToObject(
-            inputInMeter
-          )
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInMeter)
           inputInMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
           tensPowMeter = resultFloatingPointToObject.tensPow
 
@@ -294,9 +346,7 @@ export default {
         case 'milimeter (mm)':
           inputInMeter = (input / (1000 * tensPow)).toString()
           inputInMeter = this.exponentToLarge(inputInMeter)
-          resultFloatingPointToObject = this.floatingPointNumberToObject(
-            inputInMeter
-          )
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInMeter)
           inputInMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
           tensPowMeter = resultFloatingPointToObject.tensPow
 
@@ -306,9 +356,7 @@ export default {
         case 'centimeter (cm)':
           inputInMeter = (input / (100 * tensPow)).toString()
           inputInMeter = this.exponentToLarge(inputInMeter)
-          resultFloatingPointToObject = this.floatingPointNumberToObject(
-            inputInMeter
-          )
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInMeter)
           inputInMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
           tensPowMeter = resultFloatingPointToObject.tensPow
 
@@ -318,9 +366,7 @@ export default {
         case 'decimeter (dm)':
           inputInMeter = (input / (10 * tensPow)).toString()
           inputInMeter = this.exponentToLarge(inputInMeter)
-          resultFloatingPointToObject = this.floatingPointNumberToObject(
-            inputInMeter
-          )
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInMeter)
           inputInMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
           tensPowMeter = resultFloatingPointToObject.tensPow
 
@@ -331,39 +377,121 @@ export default {
           output = this.meterToTargetUnit(input, tensPow)
           this.output = this.insertWhiteSpaces(output)
           break
+        case 'decameter (dam)':
+          inputInMeter = ((input * 10) / tensPow).toString()
+          inputInMeter = this.exponentToLarge(inputInMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInMeter)
+          inputInMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowMeter = resultFloatingPointToObject.tensPow
+
+          output = this.meterToTargetUnit(inputInMeter, tensPowMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'hectometer (hm)':
+          inputInMeter = ((input * 100) / tensPow).toString()
+          inputInMeter = this.exponentToLarge(inputInMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInMeter)
+          inputInMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowMeter = resultFloatingPointToObject.tensPow
+
+          output = this.meterToTargetUnit(inputInMeter, tensPowMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
         case 'kilometer (km)':
           inputInMeter = ((input * 1000) / tensPow).toString()
           inputInMeter = this.exponentToLarge(inputInMeter)
-          resultFloatingPointToObject = this.floatingPointNumberToObject(
-            inputInMeter
-          )
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInMeter)
           inputInMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
           tensPowMeter = resultFloatingPointToObject.tensPow
 
           output = this.meterToTargetUnit(inputInMeter, tensPowMeter)
           this.output = this.insertWhiteSpaces(output)
           break
+        case 'megameter (Mm)':
+          inputInMeter = ((input * Math.pow(10, 6)) / tensPow).toString()
+          inputInMeter = this.exponentToLarge(inputInMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInMeter)
+          inputInMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowMeter = resultFloatingPointToObject.tensPow
+
+          output = this.meterToTargetUnit(inputInMeter, tensPowMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'gigameter (Gm)':
+          inputInMeter = ((input * Math.pow(10, 9)) / tensPow).toString()
+          inputInMeter = this.exponentToLarge(inputInMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInMeter)
+          inputInMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowMeter = resultFloatingPointToObject.tensPow
+
+          output = this.meterToTargetUnit(inputInMeter, tensPowMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'terameter (Tm)':
+          inputInMeter = ((input * Math.pow(10, 12)) / tensPow).toString()
+          inputInMeter = this.exponentToLarge(inputInMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInMeter)
+          inputInMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowMeter = resultFloatingPointToObject.tensPow
+
+          output = this.meterToTargetUnit(inputInMeter, tensPowMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'petameter (Pm)':
+          inputInMeter = ((input * Math.pow(10, 15)) / tensPow).toString()
+          inputInMeter = this.exponentToLarge(inputInMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInMeter)
+          inputInMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowMeter = resultFloatingPointToObject.tensPow
+
+          output = this.meterToTargetUnit(inputInMeter, tensPowMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'exameter (Em)':
+          inputInMeter = ((input * Math.pow(10, 18)) / tensPow).toString()
+          inputInMeter = this.exponentToLarge(inputInMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInMeter)
+          inputInMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowMeter = resultFloatingPointToObject.tensPow
+
+          output = this.meterToTargetUnit(inputInMeter, tensPowMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'zettameter (Zm)':
+          inputInMeter = ((input * Math.pow(10, 21)) / tensPow).toString()
+          inputInMeter = this.exponentToLarge(inputInMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInMeter)
+          inputInMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowMeter = resultFloatingPointToObject.tensPow
+
+          output = this.meterToTargetUnit(inputInMeter, tensPowMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'yottameter (Ym)':
+          inputInMeter = ((input * Math.pow(10, 24)) / tensPow).toString()
+          inputInMeter = this.exponentToLarge(inputInMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInMeter)
+          inputInMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowMeter = resultFloatingPointToObject.tensPow
+
+          output = this.meterToTargetUnit(inputInMeter, tensPowMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        // British Imperial and USC:
         case 'inch (in)':
           inputInMeter = ((input * 254) / (10000 * tensPow)).toString() // 1 in = 0.0254 m
           inputInMeter = this.exponentToLarge(inputInMeter)
-          resultFloatingPointToObject = this.floatingPointNumberToObject(
-            inputInMeter
-          )
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInMeter)
           inputInMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
           tensPowMeter = resultFloatingPointToObject.tensPow
 
           output = this.meterToTargetUnit(inputInMeter, tensPowMeter)
           this.output = this.insertWhiteSpaces(output)
           break
-        case 'feet (ft)':
-          inputInMeter = (
-            (input * 3048) /
-            (tensPow * Math.pow(10, 4))
-          ).toString() // 1 ft = 0.3048 m
+        case 'foot (ft)':
+          inputInMeter = ((input * 3048) / (tensPow * Math.pow(10, 4))).toString() // 1 ft = 0.3048 m
           inputInMeter = this.exponentToLarge(inputInMeter)
-          resultFloatingPointToObject = this.floatingPointNumberToObject(
-            inputInMeter
-          )
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInMeter)
           inputInMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
           tensPowMeter = resultFloatingPointToObject.tensPow
 
@@ -371,14 +499,9 @@ export default {
           this.output = this.insertWhiteSpaces(output)
           break
         case 'yard (yd)':
-          inputInMeter = (
-            (input * 9144) /
-            (tensPow * Math.pow(10, 4))
-          ).toString() // 1 yd = 0.9144 m
+          inputInMeter = ((input * 9144) / (tensPow * Math.pow(10, 4))).toString() // 1 yd = 0.9144 m
           inputInMeter = this.exponentToLarge(inputInMeter)
-          resultFloatingPointToObject = this.floatingPointNumberToObject(
-            inputInMeter
-          )
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInMeter)
           inputInMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
           tensPowMeter = resultFloatingPointToObject.tensPow
 
@@ -386,14 +509,9 @@ export default {
           this.output = this.insertWhiteSpaces(output)
           break
         case 'mile (mi)':
-          inputInMeter = (
-            (input * 1609344) /
-            (tensPow * Math.pow(10, 3))
-          ).toString() // 1 mi = 1 609.344 m
+          inputInMeter = ((input * 1609344) / (tensPow * Math.pow(10, 3))).toString() // 1 mi = 1 609.344 m
           inputInMeter = this.exponentToLarge(inputInMeter)
-          resultFloatingPointToObject = this.floatingPointNumberToObject(
-            inputInMeter
-          )
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInMeter)
           inputInMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
           tensPowMeter = resultFloatingPointToObject.tensPow
 
@@ -423,7 +541,19 @@ export default {
        * However if one of the operands is a real number, the result might be faulty: e.g. 0.100000004 instead of 0.1
        */
 
-      if (this.toUnit === 'nanometer (nm)') {
+      // Metric units
+      // The power of 10 equals the power of the respective SI prefix
+      if (this.toUnit === 'yoctometer (ym)') {
+        return (inputInMeter * Math.pow(10, 24)) / tensPow
+      } else if (this.toUnit === 'zeptometer (zm)') {
+        return (inputInMeter * Math.pow(10, 21)) / tensPow
+      } else if (this.toUnit === 'attometer (am)') {
+        return (inputInMeter * Math.pow(10, 18)) / tensPow
+      } else if (this.toUnit === 'femtometer (fm)') {
+        return (inputInMeter * Math.pow(10, 15)) / tensPow
+      } else if (this.toUnit === 'picometer (pm)') {
+        return (inputInMeter * Math.pow(10, 12)) / tensPow
+      } else if (this.toUnit === 'nanometer (nm)') {
         return (inputInMeter * Math.pow(10, 9)) / tensPow
       } else if (this.toUnit === 'micrometer / micron (μm)') {
         return (inputInMeter * Math.pow(10, 6)) / tensPow
@@ -433,11 +563,31 @@ export default {
         return (inputInMeter * 100) / tensPow
       } else if (this.toUnit === 'decimeter (dm)') {
         return (inputInMeter * 10) / tensPow
+      } else if (this.toUnit === 'decameter (dam)') {
+        return inputInMeter / (10 * tensPow)
+      } else if (this.toUnit === 'hectometer (hm)') {
+        return inputInMeter / (100 * tensPow)
       } else if (this.toUnit === 'kilometer (km)') {
         return inputInMeter / (1000 * tensPow)
-      } else if (this.toUnit === 'inch (in)') {
+      } else if (this.toUnit === 'megameter (Mm)') {
+        return inputInMeter / (Math.pow(10, 6) * tensPow)
+      } else if (this.toUnit === 'gigameter (Gm)') {
+        return inputInMeter / (Math.pow(10, 9) * tensPow)
+      } else if (this.toUnit === 'terameter (Tm)') {
+        return inputInMeter / (Math.pow(10, 12) * tensPow)
+      } else if (this.toUnit === 'petameter (Pm)') {
+        return inputInMeter / (Math.pow(10, 15) * tensPow)
+      } else if (this.toUnit === 'exameter (Em)') {
+        return inputInMeter / (Math.pow(10, 18) * tensPow)
+      } else if (this.toUnit === 'zettameter (Zm)') {
+        return inputInMeter / (Math.pow(10, 21) * tensPow)
+      } else if (this.toUnit === 'yottameter (Ym)') {
+        return inputInMeter / (Math.pow(10, 24) * tensPow)
+      }
+      // British Imperial and USC:
+      else if (this.toUnit === 'inch (in)') {
         return (inputInMeter * 3937007874015748) / (Math.pow(10, 14) * tensPow) // 1m = 39.37007874015748 in
-      } else if (this.toUnit === 'feet (ft)') {
+      } else if (this.toUnit === 'foot (ft)') {
         return (inputInMeter * 3280839895013123) / (Math.pow(10, 15) * tensPow) // 1m = 3.280839895013123 ft
       } else if (this.toUnit === 'yard (yd)') {
         return (inputInMeter * 10936132983) / (Math.pow(10, 10) * tensPow) // 1m = 1.0936132983 yd
@@ -446,6 +596,388 @@ export default {
       } else {
         // if (this.toUnit == 'meter (m)')
         return inputInMeter / tensPow
+      }
+    },
+
+    /**
+     * Converter for area. Converts the user input from one selected unit to another. The arguments
+     * represent the user input after it has been handled by floatingPointNumberToObject().
+     *
+     * @param {string} input   The input as a string containing all characters but the decimal point.
+     * @param {number} tensPow 10 raised to the n-th power, where n is the number of digits after the decimal point.
+     * @return {string} The output converted into the desired unit.
+     *
+     * Notes: First checks for input in E-notation and for floating point input and calls the respective functions.
+     * Then the input is first converted to square meter and the result is passed as an argument in the helper function
+     * squareMeterToTargetUnit(): the conversion to the desired unit is calculated there.
+     * Finally calls formatter function for the output which sets white spaces as thousand separators if necessary.
+     */
+    areaConverter(input, tensPow) {
+      if (this.toUnit === this.fromUnit) {
+        this.output = this.insertWhiteSpaces(input / tensPow)
+        return
+      }
+      let output = '',
+        inputInSquareMeter = '',
+        tensPowSquareMeter = 0,
+        resultFloatingPointToObject = {}
+      switch (this.fromUnit) {
+        // Metric units:
+        // The power of 10 equals |power of SI prefix| * 2; (power of SI prefix) is noted in the comments
+        // Litre and multiples (1m^3 = 1 kl):
+        case 'square yoctometer (ym²)': // -24
+          inputInSquareMeter = (input / (Math.pow(10, 48) * tensPow)).toString()
+          inputInSquareMeter = this.exponentToLarge(inputInSquareMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSquareMeter)
+          inputInSquareMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSquareMeter = resultFloatingPointToObject.tensPow
+
+          output = this.squareMeterToTargetUnit(inputInSquareMeter, tensPowSquareMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'square zeptometer (zm²)': // -21
+          inputInSquareMeter = (input / (Math.pow(10, 42) * tensPow)).toString()
+          inputInSquareMeter = this.exponentToLarge(inputInSquareMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSquareMeter)
+          inputInSquareMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSquareMeter = resultFloatingPointToObject.tensPow
+
+          output = this.squareMeterToTargetUnit(inputInSquareMeter, tensPowSquareMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'square attometer (am²)': // -18
+          inputInSquareMeter = (input / (Math.pow(10, 36) * tensPow)).toString()
+          inputInSquareMeter = this.exponentToLarge(inputInSquareMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSquareMeter)
+          inputInSquareMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSquareMeter = resultFloatingPointToObject.tensPow
+
+          output = this.squareMeterToTargetUnit(inputInSquareMeter, tensPowSquareMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'square femtometer (fm²)': // -15
+          inputInSquareMeter = (input / (Math.pow(10, 30) * tensPow)).toString()
+          inputInSquareMeter = this.exponentToLarge(inputInSquareMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSquareMeter)
+          inputInSquareMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSquareMeter = resultFloatingPointToObject.tensPow
+
+          output = this.squareMeterToTargetUnit(inputInSquareMeter, tensPowSquareMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'square picometer (pm²)': // -12
+          inputInSquareMeter = (input / (Math.pow(10, 24) * tensPow)).toString()
+          inputInSquareMeter = this.exponentToLarge(inputInSquareMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSquareMeter)
+          inputInSquareMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSquareMeter = resultFloatingPointToObject.tensPow
+
+          output = this.squareMeterToTargetUnit(inputInSquareMeter, tensPowSquareMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'square nanometer (nm²)': // -9
+          inputInSquareMeter = (input / (Math.pow(10, 18) * tensPow)).toString()
+          inputInSquareMeter = this.exponentToLarge(inputInSquareMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSquareMeter)
+          inputInSquareMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSquareMeter = resultFloatingPointToObject.tensPow
+
+          output = this.squareMeterToTargetUnit(inputInSquareMeter, tensPowSquareMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'square micrometer (μm²)': // -6
+          inputInSquareMeter = (input / (Math.pow(10, 12) * tensPow)).toString()
+          inputInSquareMeter = this.exponentToLarge(inputInSquareMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSquareMeter)
+          inputInSquareMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSquareMeter = resultFloatingPointToObject.tensPow
+
+          output = this.squareMeterToTargetUnit(inputInSquareMeter, tensPowSquareMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'square milimeter (mm²)': // -3
+          inputInSquareMeter = (input / (Math.pow(10, 6) * tensPow)).toString()
+          inputInSquareMeter = this.exponentToLarge(inputInSquareMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSquareMeter)
+          inputInSquareMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSquareMeter = resultFloatingPointToObject.tensPow
+
+          output = this.squareMeterToTargetUnit(inputInSquareMeter, tensPowSquareMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'square centimeter (cm²)': //-2
+          inputInSquareMeter = (input / (Math.pow(10, 4) * tensPow)).toString()
+          inputInSquareMeter = this.exponentToLarge(inputInSquareMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSquareMeter)
+          inputInSquareMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSquareMeter = resultFloatingPointToObject.tensPow
+
+          output = this.squareMeterToTargetUnit(inputInSquareMeter, tensPowSquareMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'square decimeter (dm²)': // -1
+          inputInSquareMeter = (input / (100 * tensPow)).toString()
+          inputInSquareMeter = this.exponentToLarge(inputInSquareMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSquareMeter)
+          inputInSquareMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSquareMeter = resultFloatingPointToObject.tensPow
+
+          output = this.squareMeterToTargetUnit(inputInSquareMeter, tensPowSquareMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'square meter (m²)':
+          output = this.squareMeterToTargetUnit(input, tensPow)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'square decameter (dam²)': // 1
+          inputInSquareMeter = ((input * 100) / tensPow).toString()
+          inputInSquareMeter = this.exponentToLarge(inputInSquareMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSquareMeter)
+          inputInSquareMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSquareMeter = resultFloatingPointToObject.tensPow
+
+          output = this.squareMeterToTargetUnit(inputInSquareMeter, tensPowSquareMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'square hectometer (hm²)': // 2
+          inputInSquareMeter = ((input * Math.pow(10, 4)) / tensPow).toString()
+          inputInSquareMeter = this.exponentToLarge(inputInSquareMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSquareMeter)
+          inputInSquareMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSquareMeter = resultFloatingPointToObject.tensPow
+
+          output = this.squareMeterToTargetUnit(inputInSquareMeter, tensPowSquareMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'square kilometer (km²)': // 3
+          inputInSquareMeter = ((input * Math.pow(10, 6)) / tensPow).toString()
+          inputInSquareMeter = this.exponentToLarge(inputInSquareMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSquareMeter)
+          inputInSquareMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSquareMeter = resultFloatingPointToObject.tensPow
+
+          output = this.squareMeterToTargetUnit(inputInSquareMeter, tensPowSquareMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'square megameter (Mm²)': // 6
+          inputInSquareMeter = ((input * Math.pow(10, 12)) / tensPow).toString()
+          inputInSquareMeter = this.exponentToLarge(inputInSquareMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSquareMeter)
+          inputInSquareMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSquareMeter = resultFloatingPointToObject.tensPow
+
+          output = this.squareMeterToTargetUnit(inputInSquareMeter, tensPowSquareMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'square gigameter (Gm²)': // 9
+          inputInSquareMeter = ((input * Math.pow(10, 18)) / tensPow).toString()
+          inputInSquareMeter = this.exponentToLarge(inputInSquareMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSquareMeter)
+          inputInSquareMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSquareMeter = resultFloatingPointToObject.tensPow
+
+          output = this.squareMeterToTargetUnit(inputInSquareMeter, tensPowSquareMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'square terameter (Tm²)': // 12
+          inputInSquareMeter = ((input * Math.pow(10, 24)) / tensPow).toString()
+          inputInSquareMeter = this.exponentToLarge(inputInSquareMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSquareMeter)
+          inputInSquareMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSquareMeter = resultFloatingPointToObject.tensPow
+
+          output = this.squareMeterToTargetUnit(inputInSquareMeter, tensPowSquareMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'square petameter (Pm²)': // 15
+          inputInSquareMeter = ((input * Math.pow(10, 30)) / tensPow).toString()
+          inputInSquareMeter = this.exponentToLarge(inputInSquareMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSquareMeter)
+          inputInSquareMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSquareMeter = resultFloatingPointToObject.tensPow
+
+          output = this.squareMeterToTargetUnit(inputInSquareMeter, tensPowSquareMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'square exameter (Em²)': // 18
+          //9.999999999999999e+35 must be e+18
+          inputInSquareMeter = ((input * Math.pow(10, 36)) / tensPow).toString()
+          inputInSquareMeter = this.exponentToLarge(inputInSquareMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSquareMeter)
+          inputInSquareMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSquareMeter = resultFloatingPointToObject.tensPow
+
+          output = this.squareMeterToTargetUnit(inputInSquareMeter, tensPowSquareMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'square zettameter (Zm²)': // 21
+          // 9.999999999999999e+41 must be e+42
+          inputInSquareMeter = ((input * Math.pow(10, 42)) / tensPow).toString()
+          inputInSquareMeter = this.exponentToLarge(inputInSquareMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSquareMeter)
+          inputInSquareMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSquareMeter = resultFloatingPointToObject.tensPow
+
+          output = this.squareMeterToTargetUnit(inputInSquareMeter, tensPowSquareMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'square yottameter (Ym²)': // 24
+          inputInSquareMeter = ((input * Math.pow(10, 48)) / tensPow).toString()
+          inputInSquareMeter = this.exponentToLarge(inputInSquareMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSquareMeter)
+          inputInSquareMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSquareMeter = resultFloatingPointToObject.tensPow
+
+          output = this.squareMeterToTargetUnit(inputInSquareMeter, tensPowSquareMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        // British Imperial and USC:
+        case 'square inch (in²)':
+          inputInSquareMeter = ((input * 64516) / (Math.pow(10, 8) * tensPow)).toString() // 1 square in = 0.0254^2 m
+          inputInSquareMeter = this.exponentToLarge(inputInSquareMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSquareMeter)
+          inputInSquareMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSquareMeter = resultFloatingPointToObject.tensPow
+
+          output = this.squareMeterToTargetUnit(inputInSquareMeter, tensPowSquareMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'square foot (ft²)':
+          inputInSquareMeter = ((input * 9290304) / (Math.pow(10, 8) * tensPow)).toString() // 1 square ft = 0.3048^2 m
+          inputInSquareMeter = this.exponentToLarge(inputInSquareMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSquareMeter)
+          inputInSquareMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSquareMeter = resultFloatingPointToObject.tensPow
+
+          output = this.squareMeterToTargetUnit(inputInSquareMeter, tensPowSquareMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'square yard (yd²)':
+          inputInSquareMeter = ((input * 83612736) / (Math.pow(10, 8) * tensPow)).toString() // 1 square yd = 0.9144^2 m
+          inputInSquareMeter = this.exponentToLarge(inputInSquareMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSquareMeter)
+          inputInSquareMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSquareMeter = resultFloatingPointToObject.tensPow
+
+          output = this.squareMeterToTargetUnit(inputInSquareMeter, tensPowSquareMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'square mile (mi²)':
+          inputInSquareMeter = (((input * 2589988110336) / Math.pow(10, 6)) * tensPow).toString() // 1 square mi = 1 609.344^2 m
+          inputInSquareMeter = this.exponentToLarge(inputInSquareMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSquareMeter)
+          inputInSquareMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSquareMeter = resultFloatingPointToObject.tensPow
+
+          output = this.squareMeterToTargetUnit(inputInSquareMeter, tensPowSquareMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        default:
+          alert('Please choose units from the dropdown menus')
+      }
+    },
+
+    /**
+     * Helper function for areaConverter(). Converts the user input from square meter to the desired unit. The
+     * arguments represent the user input after it has been handled by floatingPointNumberToObject().
+     *
+     * @param {string} inputInSquareMeter   The input in square meter as a string containing all characters but the
+     *                                      decimal point.
+     * @param {number} tensPow 10 raised to the n-th power, where n is the number of digits after the decimal point.
+     * @return {string} The output converted into the desired unit.
+     */
+    squareMeterToTargetUnit(inputInSquareMeter, tensPow) {
+      /**
+       * Floating point arithmetic:
+       * GOAL: to have two integer operands at each step -> the brackets are put in a way that this is achieved:
+       * multiplication always comes first, because it can not lead to a floating point result.
+       * Division comes last:
+       * integer / integer = correct result, even if the result is a real number.
+       * However if one of the operands is a real number, the result might be faulty: e.g. 0.100000004 instead of 0.1
+       */
+
+      // Metric units
+      // The power of 10 equals |power of SI prefix| * 2; (power of SI prefix) is noted in the comments
+      if (this.toUnit === 'square yoctometer (ym²)') {
+        // -24
+        return (inputInSquareMeter * Math.pow(10, 48)) / tensPow
+      } else if (this.toUnit === 'square zeptometer (zm²)') {
+        // -21
+        //9.999999999999999e+41 must be e+42
+        return (inputInSquareMeter * Math.pow(10, 42)) / tensPow
+      } else if (this.toUnit === 'square attometer (am²)') {
+        // -18
+        // 9.999999999999999e+35 must be e+36
+        return (inputInSquareMeter * Math.pow(10, 36)) / tensPow
+      } else if (this.toUnit === 'square femtometer (fm²)') {
+        // -15
+        return (inputInSquareMeter * Math.pow(10, 30)) / tensPow
+      } else if (this.toUnit === 'square picometer (pm²)') {
+        // -12
+        return (inputInSquareMeter * Math.pow(10, 24)) / tensPow
+      } else if (this.toUnit === 'square nanometer (nm²)') {
+        // -9
+        return (inputInSquareMeter * Math.pow(10, 18)) / tensPow
+      } else if (this.toUnit === 'square micrometer (μm²)') {
+        // -6
+        return (inputInSquareMeter * Math.pow(10, 12)) / tensPow
+      } else if (this.toUnit === 'square milimeter (mm²)') {
+        // -3
+        return (inputInSquareMeter * Math.pow(10, 6)) / tensPow
+      } else if (this.toUnit === 'square centimeter (cm²)') {
+        // -2
+        return (inputInSquareMeter * Math.pow(10, 4)) / tensPow
+      } else if (this.toUnit === 'square decimeter (dm²)') {
+        // -1
+        return (inputInSquareMeter * 100) / tensPow
+      } else if (this.toUnit === 'square meter (m²)') {
+        return inputInSquareMeter / tensPow
+      } else if (this.toUnit === 'square decameter (dam²)') {
+        // 1
+        return inputInSquareMeter / (100 * tensPow)
+      } else if (this.toUnit === 'square hectometer (hm²)') {
+        // 2
+        return inputInSquareMeter / (Math.pow(10, 4) * tensPow)
+      } else if (this.toUnit === 'square kilometer (km²)') {
+        // 3
+        return inputInSquareMeter / (Math.pow(10, 6) * tensPow)
+      } else if (this.toUnit === 'square megameter (Mm²)') {
+        // 6
+        return inputInSquareMeter / (Math.pow(10, 12) * tensPow)
+      } else if (this.toUnit === 'square gigameter (Gm²)') {
+        // 9
+        return inputInSquareMeter / (Math.pow(10, 18) * tensPow)
+      } else if (this.toUnit === 'square terameter (Tm²)') {
+        // 12
+        //1.0000000000000001e-24
+        return inputInSquareMeter / (Math.pow(10, 24) * tensPow)
+      } else if (this.toUnit === 'square petameter (Pm²)') {
+        // 15
+        //9.999999999999999e-31 Here even the Power is wrong, must be 30
+        return inputInSquareMeter / (Math.pow(10, 30) * tensPow)
+      } else if (this.toUnit === 'square exameter (Em²)') {
+        // 18
+        //1.0000000000000001e-36
+        return inputInSquareMeter / (Math.pow(10, 36) * tensPow)
+      } else if (this.toUnit === 'square zettameter (Zm²)') {
+        // 21
+        return inputInSquareMeter / (Math.pow(10, 42) * tensPow)
+      } else if (this.toUnit === 'square yottameter (Ym²)') {
+        // 24
+        return inputInSquareMeter / (Math.pow(10, 48) * tensPow)
+      }
+      // British and U.S.:
+      else if (this.toUnit === 'square inch (in²)') {
+        return (inputInSquareMeter * 15500031000062) / (Math.pow(10, 10) * tensPow) // 1 square m = 39.37007874015748^2 in
+      } else if (this.toUnit === 'square foot (ft²)') {
+        return (inputInSquareMeter * 1076391041670972) / (Math.pow(10, 14) * tensPow) // 1 square m = 3.280839895013123^2 ft
+      } else if (this.toUnit === 'square yard (yd²)') {
+        return (inputInSquareMeter * 1195990046218605) / (Math.pow(10, 15) * tensPow) // 1 square m = 1.0936132983^2 yd
+      } else if (this.toUnit === 'square mile (mi²)') {
+        return (inputInSquareMeter * 3861021585424409) / (Math.pow(10, 22) * tensPow) // 1 square m =  0.0062137119223733^2 mi
+      } else {
+        // if (this.toUnit == 'square meter')
+        return inputInSquareMeter / tensPow
       }
     },
 
@@ -472,104 +1004,318 @@ export default {
         tensPowCubicMeter = 0,
         resultFloatingPointToObject = {}
       switch (this.fromUnit) {
-        case 'cubic milimeter':
+        // Metric units
+        // The power of 10 equals [(power of SI prefix) * 3]; (power of SI prefix) is noted in the comments
+        case 'cubic milimeter (mm³)': // -3
           inputInCubicMeter = (input / (Math.pow(10, 9) * tensPow)).toString()
           inputInCubicMeter = this.exponentToLarge(inputInCubicMeter)
-          resultFloatingPointToObject = this.floatingPointNumberToObject(
-            inputInCubicMeter
-          )
-          inputInCubicMeter =
-            resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInCubicMeter)
+          inputInCubicMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
           tensPowCubicMeter = resultFloatingPointToObject.tensPow
 
-          output = this.cubicMeterToTargetUnit(
-            inputInCubicMeter,
-            tensPowCubicMeter
-          )
+          output = this.cubicMeterToTargetUnit(inputInCubicMeter, tensPowCubicMeter)
           this.output = this.insertWhiteSpaces(output)
           break
-        case 'cubic centimeter':
+        case 'cubic centimeter (cm³)': // -2
           inputInCubicMeter = (input / (Math.pow(10, 6) * tensPow)).toString()
           inputInCubicMeter = this.exponentToLarge(inputInCubicMeter)
-          resultFloatingPointToObject = this.floatingPointNumberToObject(
-            inputInCubicMeter
-          )
-          inputInCubicMeter =
-            resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInCubicMeter)
+          inputInCubicMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
           tensPowCubicMeter = resultFloatingPointToObject.tensPow
 
-          output = this.cubicMeterToTargetUnit(
-            inputInCubicMeter,
-            tensPowCubicMeter
-          )
+          output = this.cubicMeterToTargetUnit(inputInCubicMeter, tensPowCubicMeter)
           this.output = this.insertWhiteSpaces(output)
           break
-        case 'cubic decimeter':
+        case 'cubic decimeter (dm³)': // -1
           inputInCubicMeter = (input / (1000 * tensPow)).toString()
           inputInCubicMeter = this.exponentToLarge(inputInCubicMeter)
-          resultFloatingPointToObject = this.floatingPointNumberToObject(
-            inputInCubicMeter
-          )
-          inputInCubicMeter =
-            resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInCubicMeter)
+          inputInCubicMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
           tensPowCubicMeter = resultFloatingPointToObject.tensPow
 
-          output = this.cubicMeterToTargetUnit(
-            inputInCubicMeter,
-            tensPowCubicMeter
-          )
+          output = this.cubicMeterToTargetUnit(inputInCubicMeter, tensPowCubicMeter)
           this.output = this.insertWhiteSpaces(output)
           break
-        case 'cubic meter':
+        case 'cubic meter (m³)': // 1m^3 = 1kl (same as the case for kilolitre)
           output = this.cubicMeterToTargetUnit(input, tensPow)
           this.output = this.insertWhiteSpaces(output)
           break
-        case 'cubic kilometer':
+        case 'cubic decameter (dam³)': // 1
+          inputInCubicMeter = ((input * 1000) / tensPow).toString()
+          inputInCubicMeter = this.exponentToLarge(inputInCubicMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInCubicMeter)
+          inputInCubicMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowCubicMeter = resultFloatingPointToObject.tensPow
+
+          output = this.cubicMeterToTargetUnit(inputInCubicMeter, tensPowCubicMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'cubic hectometer (hm³)': // 2
+          inputInCubicMeter = ((input * Math.pow(10, 6)) / tensPow).toString()
+          inputInCubicMeter = this.exponentToLarge(inputInCubicMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInCubicMeter)
+          inputInCubicMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowCubicMeter = resultFloatingPointToObject.tensPow
+
+          output = this.cubicMeterToTargetUnit(inputInCubicMeter, tensPowCubicMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'cubic kilometer (km³)': // 3
           inputInCubicMeter = ((input * Math.pow(10, 9)) / tensPow).toString()
           inputInCubicMeter = this.exponentToLarge(inputInCubicMeter)
-          resultFloatingPointToObject = this.floatingPointNumberToObject(
-            inputInCubicMeter
-          )
-          inputInCubicMeter =
-            resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInCubicMeter)
+          inputInCubicMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
           tensPowCubicMeter = resultFloatingPointToObject.tensPow
 
-          output = this.cubicMeterToTargetUnit(
-            inputInCubicMeter,
-            tensPowCubicMeter
-          )
+          output = this.cubicMeterToTargetUnit(inputInCubicMeter, tensPowCubicMeter)
           this.output = this.insertWhiteSpaces(output)
           break
-        case 'mililiter':
+        // Litre and multiples
+        // (1m^3 = 1 kl)
+        // The power of 10 equals |(power of SI prefix) - 3|; (power of SI prefix) is noted in the comments
+        case 'yoctolitre (yl)': // -24
+          inputInCubicMeter = (input / (Math.pow(10, 27) * tensPow)).toString()
+          inputInCubicMeter = this.exponentToLarge(inputInCubicMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInCubicMeter)
+          inputInCubicMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowCubicMeter = resultFloatingPointToObject.tensPow
+
+          output = this.cubicMeterToTargetUnit(inputInCubicMeter, tensPowCubicMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'zeptolitre (zl)': // -21
+          inputInCubicMeter = (input / (Math.pow(10, 24) * tensPow)).toString()
+          inputInCubicMeter = this.exponentToLarge(inputInCubicMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInCubicMeter)
+          inputInCubicMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowCubicMeter = resultFloatingPointToObject.tensPow
+
+          output = this.cubicMeterToTargetUnit(inputInCubicMeter, tensPowCubicMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'attolitre (al)': // -18
+          inputInCubicMeter = (input / (Math.pow(10, 21) * tensPow)).toString()
+          inputInCubicMeter = this.exponentToLarge(inputInCubicMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInCubicMeter)
+          inputInCubicMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowCubicMeter = resultFloatingPointToObject.tensPow
+
+          output = this.cubicMeterToTargetUnit(inputInCubicMeter, tensPowCubicMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'femtolitre (fl)': // -15
+          inputInCubicMeter = (input / (Math.pow(10, 18) * tensPow)).toString()
+          inputInCubicMeter = this.exponentToLarge(inputInCubicMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInCubicMeter)
+          inputInCubicMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowCubicMeter = resultFloatingPointToObject.tensPow
+
+          output = this.cubicMeterToTargetUnit(inputInCubicMeter, tensPowCubicMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'picolitre (pl)': // -12
+          inputInCubicMeter = (input / (Math.pow(10, 15) * tensPow)).toString()
+          inputInCubicMeter = this.exponentToLarge(inputInCubicMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInCubicMeter)
+          inputInCubicMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowCubicMeter = resultFloatingPointToObject.tensPow
+
+          output = this.cubicMeterToTargetUnit(inputInCubicMeter, tensPowCubicMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'nanolitre (nl)': // -9
+          inputInCubicMeter = (input / (Math.pow(10, 12) * tensPow)).toString()
+          inputInCubicMeter = this.exponentToLarge(inputInCubicMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInCubicMeter)
+          inputInCubicMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowCubicMeter = resultFloatingPointToObject.tensPow
+
+          output = this.cubicMeterToTargetUnit(inputInCubicMeter, tensPowCubicMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'microlitre (μl)': // -6
+          inputInCubicMeter = (input / (Math.pow(10, 9) * tensPow)).toString()
+          inputInCubicMeter = this.exponentToLarge(inputInCubicMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInCubicMeter)
+          inputInCubicMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowCubicMeter = resultFloatingPointToObject.tensPow
+
+          output = this.cubicMeterToTargetUnit(inputInCubicMeter, tensPowCubicMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'mililitre (ml)': // -3
           inputInCubicMeter = (input / (Math.pow(10, 6) * tensPow)).toString()
           inputInCubicMeter = this.exponentToLarge(inputInCubicMeter)
-          resultFloatingPointToObject = this.floatingPointNumberToObject(
-            inputInCubicMeter
-          )
-          inputInCubicMeter =
-            resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInCubicMeter)
+          inputInCubicMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
           tensPowCubicMeter = resultFloatingPointToObject.tensPow
 
-          output = this.cubicMeterToTargetUnit(
-            inputInCubicMeter,
-            tensPowCubicMeter
-          )
+          output = this.cubicMeterToTargetUnit(inputInCubicMeter, tensPowCubicMeter)
           this.output = this.insertWhiteSpaces(output)
           break
-        case 'liter':
-          inputInCubicMeter = (input / (1000 * tensPow)).toString()
+        case 'centilitre (cl)': // -2
+          inputInCubicMeter = (input / (Math.pow(10, 5) * tensPow)).toString()
           inputInCubicMeter = this.exponentToLarge(inputInCubicMeter)
-          resultFloatingPointToObject = this.floatingPointNumberToObject(
-            inputInCubicMeter
-          )
-          inputInCubicMeter =
-            resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInCubicMeter)
+          inputInCubicMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
           tensPowCubicMeter = resultFloatingPointToObject.tensPow
 
-          output = this.cubicMeterToTargetUnit(
-            inputInCubicMeter,
-            tensPowCubicMeter
-          )
+          output = this.cubicMeterToTargetUnit(inputInCubicMeter, tensPowCubicMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'decilitre (dl)': // -1
+          inputInCubicMeter = (input / (Math.pow(10, 4) * tensPow)).toString()
+          inputInCubicMeter = this.exponentToLarge(inputInCubicMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInCubicMeter)
+          inputInCubicMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowCubicMeter = resultFloatingPointToObject.tensPow
+
+          output = this.cubicMeterToTargetUnit(inputInCubicMeter, tensPowCubicMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'litre (l, L)': // 0
+          inputInCubicMeter = (input / (1000 * tensPow)).toString()
+          inputInCubicMeter = this.exponentToLarge(inputInCubicMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInCubicMeter)
+          inputInCubicMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowCubicMeter = resultFloatingPointToObject.tensPow
+
+          output = this.cubicMeterToTargetUnit(inputInCubicMeter, tensPowCubicMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'decalitre (dal)': // 1
+          inputInCubicMeter = (input / (100 * tensPow)).toString()
+          inputInCubicMeter = this.exponentToLarge(inputInCubicMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInCubicMeter)
+          inputInCubicMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowCubicMeter = resultFloatingPointToObject.tensPow
+
+          output = this.cubicMeterToTargetUnit(inputInCubicMeter, tensPowCubicMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'hectolitre (hl)': // 2
+          inputInCubicMeter = (input / (10 * tensPow)).toString()
+          inputInCubicMeter = this.exponentToLarge(inputInCubicMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInCubicMeter)
+          inputInCubicMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowCubicMeter = resultFloatingPointToObject.tensPow
+
+          output = this.cubicMeterToTargetUnit(inputInCubicMeter, tensPowCubicMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'kilolitre (kl)': // 3; 1m^3 = 1kl (same as the case for cubic meter)
+          output = this.cubicMeterToTargetUnit(input, tensPow)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'megalitre (Ml)': // 6
+          inputInCubicMeter = ((input * Math.pow(10, 3)) / tensPow).toString()
+          inputInCubicMeter = this.exponentToLarge(inputInCubicMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInCubicMeter)
+          inputInCubicMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowCubicMeter = resultFloatingPointToObject.tensPow
+
+          output = this.cubicMeterToTargetUnit(inputInCubicMeter, tensPowCubicMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'gigalitre (Gl)': // 9
+          inputInCubicMeter = ((input * Math.pow(10, 6)) / tensPow).toString()
+          inputInCubicMeter = this.exponentToLarge(inputInCubicMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInCubicMeter)
+          inputInCubicMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowCubicMeter = resultFloatingPointToObject.tensPow
+
+          output = this.cubicMeterToTargetUnit(inputInCubicMeter, tensPowCubicMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'teralitre (Tl)': // 12
+          inputInCubicMeter = ((input * Math.pow(10, 9)) / tensPow).toString()
+          inputInCubicMeter = this.exponentToLarge(inputInCubicMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInCubicMeter)
+          inputInCubicMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowCubicMeter = resultFloatingPointToObject.tensPow
+
+          output = this.cubicMeterToTargetUnit(inputInCubicMeter, tensPowCubicMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'petalitre (Pl)': // 15
+          inputInCubicMeter = ((input * Math.pow(10, 12)) / tensPow).toString()
+          inputInCubicMeter = this.exponentToLarge(inputInCubicMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInCubicMeter)
+          inputInCubicMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowCubicMeter = resultFloatingPointToObject.tensPow
+
+          output = this.cubicMeterToTargetUnit(inputInCubicMeter, tensPowCubicMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'exalitre (El)': // 18
+          inputInCubicMeter = ((input * Math.pow(10, 15)) / tensPow).toString()
+          inputInCubicMeter = this.exponentToLarge(inputInCubicMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInCubicMeter)
+          inputInCubicMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowCubicMeter = resultFloatingPointToObject.tensPow
+
+          output = this.cubicMeterToTargetUnit(inputInCubicMeter, tensPowCubicMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'zettalitre (Zl)': // 21
+          inputInCubicMeter = ((input * Math.pow(10, 18)) / tensPow).toString()
+          inputInCubicMeter = this.exponentToLarge(inputInCubicMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInCubicMeter)
+          inputInCubicMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowCubicMeter = resultFloatingPointToObject.tensPow
+
+          output = this.cubicMeterToTargetUnit(inputInCubicMeter, tensPowCubicMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'yottalitre (Yl)': // 24
+          inputInCubicMeter = ((input * Math.pow(10, 21)) / tensPow).toString()
+          inputInCubicMeter = this.exponentToLarge(inputInCubicMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInCubicMeter)
+          inputInCubicMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowCubicMeter = resultFloatingPointToObject.tensPow
+
+          output = this.cubicMeterToTargetUnit(inputInCubicMeter, tensPowCubicMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        // British Imperial and USC:
+        case 'cubic inch (in³)':
+          inputInCubicMeter = ((input * 16387064) / (Math.pow(10, 12) * tensPow)).toString() // 1 cubic in = 0.0254^3 m
+          inputInCubicMeter = this.exponentToLarge(inputInCubicMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInCubicMeter)
+          inputInCubicMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowCubicMeter = resultFloatingPointToObject.tensPow
+
+          output = this.cubicMeterToTargetUnit(inputInCubicMeter, tensPowCubicMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'cubic foot (ft³)':
+          inputInCubicMeter = ((input * 28316846592) / (Math.pow(10, 12) * tensPow)).toString() // 1 cubic ft = 0.3048^3 m
+          inputInCubicMeter = this.exponentToLarge(inputInCubicMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInCubicMeter)
+          inputInCubicMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowCubicMeter = resultFloatingPointToObject.tensPow
+
+          output = this.cubicMeterToTargetUnit(inputInCubicMeter, tensPowCubicMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'cubic yard (yd³)':
+          inputInCubicMeter = ((input * 764554857984) / (Math.pow(10, 12) * tensPow)).toString() // 1 cubic yd = 0.9144^3 m
+          inputInCubicMeter = this.exponentToLarge(inputInCubicMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInCubicMeter)
+          inputInCubicMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowCubicMeter = resultFloatingPointToObject.tensPow
+
+          output = this.cubicMeterToTargetUnit(inputInCubicMeter, tensPowCubicMeter)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'cubic mile (mi³)':
+          inputInCubicMeter = (((input * 416818182544058) / Math.pow(10, 5)) * tensPow).toString() // 1 cubic mi = 1 609.344^3 m
+          inputInCubicMeter = this.exponentToLarge(inputInCubicMeter)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInCubicMeter)
+          inputInCubicMeter = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowCubicMeter = resultFloatingPointToObject.tensPow
+
+          output = this.cubicMeterToTargetUnit(inputInCubicMeter, tensPowCubicMeter)
           this.output = this.insertWhiteSpaces(output)
           break
         default:
@@ -581,7 +1327,8 @@ export default {
      * Helper function for volumeConverter(). Converts the user input from cubic meter to the desired unit. The
      * arguments represent the user input after it has been handled by floatingPointNumberToObject().
      *
-     * @param {string} inputInMeter   The input in meter as a string containing all characters but the decimal point.
+     * @param {string} inputInCubicMeter  The input in cubic meter as a string containing all characters but the
+     *                                    decimal point.
      * @param {number} tensPow 10 raised to the n-th power, where n is the number of digits after the decimal point.
      * @return {string} The output converted into the desired unit.
      */
@@ -595,20 +1342,105 @@ export default {
        * However if one of the operands is a real number, the result might be faulty: e.g. 0.100000004 instead of 0.1
        */
 
-      if (this.toUnit === 'cubic milimeter') {
+      // Metric units
+      // The power of 10 equals |power of SI prefix| * 3; (power of SI prefix) is noted in the comments
+      if (this.toUnit === 'cubic milimeter (mm³)') {
+        // -3
         return (inputInCubicMeter * Math.pow(10, 9)) / tensPow
-      } else if (this.toUnit === 'cubic centimeter') {
+      } else if (this.toUnit === 'cubic centimeter (cm³)') {
+        // -2
         return (inputInCubicMeter * Math.pow(10, 6)) / tensPow
-      } else if (this.toUnit === 'cubic decimeter') {
+      } else if (this.toUnit === 'cubic decimeter (dm³)') {
+        // -1
         return (inputInCubicMeter * 1000) / tensPow
-      } else if (this.toUnit === 'cubic kilometer') {
+      } else if (this.toUnit === 'cubic decameter (dam³)') {
+        // 1
+        return inputInCubicMeter / (1000 * tensPow)
+      } else if (this.toUnit === 'cubic hectometer (hm³)') {
+        // 2
+        return inputInCubicMeter / (Math.pow(10, 6) * tensPow)
+      } else if (this.toUnit === 'cubic kilometer (km³)') {
+        // 3
         return inputInCubicMeter / (Math.pow(10, 9) * tensPow)
-      } else if (this.toUnit === 'mililiter') {
+      }
+      // Litre and multiples
+      // (1m^3 = 1 kl)
+      // The power of 10 equals |(power of SI prefix) - 3|; (power of SI prefix) is noted in the comments
+      else if (this.toUnit === 'yoctolitre (yl)') {
+        // -24
+        return (inputInCubicMeter * Math.pow(10, 27)) / tensPow
+      } else if (this.toUnit === 'zeptolitre (zl)') {
+        // -21
+        return (inputInCubicMeter * Math.pow(10, 24)) / tensPow
+      } else if (this.toUnit === 'attolitre (al)') {
+        // -18
+        return (inputInCubicMeter * Math.pow(10, 21)) / tensPow
+      } else if (this.toUnit === 'femtolitre (fl)') {
+        // -15
+        return (inputInCubicMeter * Math.pow(10, 18)) / tensPow
+      } else if (this.toUnit === 'picolitre (pl)') {
+        // -12
+        return (inputInCubicMeter * Math.pow(10, 15)) / tensPow
+      } else if (this.toUnit === 'nanolitre (nl)') {
+        // -9
+        return (inputInCubicMeter * Math.pow(10, 12)) / tensPow
+      } else if (this.toUnit === 'microlitre (μl)') {
+        // -6
+        return (inputInCubicMeter * Math.pow(10, 9)) / tensPow
+      } else if (this.toUnit === 'mililitre (ml)') {
+        // -3
         return (inputInCubicMeter * Math.pow(10, 6)) / tensPow
-      } else if (this.toUnit === 'liter') {
+      } else if (this.toUnit === 'centilitre (cl)') {
+        // -2
+        return (inputInCubicMeter * Math.pow(10, 5)) / tensPow
+      } else if (this.toUnit === 'decilitre (dl)') {
+        // -1
+        return (inputInCubicMeter * Math.pow(10, 4)) / tensPow
+      } else if (this.toUnit === 'litre (l, L)') {
         return (inputInCubicMeter * 1000) / tensPow
+      } else if (this.toUnit === 'decalitre (dal)') {
+        // 1
+        return (inputInCubicMeter * 100) / tensPow
+      } else if (this.toUnit === 'hectolitre (hl)') {
+        // 2
+        return (inputInCubicMeter * 10) / tensPow
+      } else if (this.toUnit === 'kilolitre (kl)') {
+        // 3
+        // 1m^3 = 1 kl
+        return inputInCubicMeter / tensPow
+      } else if (this.toUnit === 'megalitre (Ml)') {
+        // 6
+        return inputInCubicMeter / (Math.pow(10, 3) * tensPow)
+      } else if (this.toUnit === 'gigalitre (Gl)') {
+        // 9
+        return inputInCubicMeter / (Math.pow(10, 6) * tensPow)
+      } else if (this.toUnit === 'teralitre (Tl)') {
+        // 12
+        return inputInCubicMeter / (Math.pow(10, 9) * tensPow)
+      } else if (this.toUnit === 'petalitre (Pl)') {
+        // 15
+        return inputInCubicMeter / (Math.pow(10, 12) * tensPow)
+      } else if (this.toUnit === 'exalitre (El)') {
+        // 18
+        return inputInCubicMeter / (Math.pow(10, 15) * tensPow)
+      } else if (this.toUnit === 'zettalitre (Zl)') {
+        // 21
+        return inputInCubicMeter / (Math.pow(10, 18) * tensPow)
+      } else if (this.toUnit === 'yottalitre (Yl)') {
+        // 24
+        return inputInCubicMeter / (Math.pow(10, 21) * tensPow)
+      }
+      // British and U.S.:
+      else if (this.toUnit === 'cubic inch (in³)') {
+        return (inputInCubicMeter * 6102374409473228) / (Math.pow(10, 11) * tensPow) // 1 cubic m = 39.37007874015748^3 in
+      } else if (this.toUnit === 'cubic foot (ft³)') {
+        return (inputInCubicMeter * 3531466672148858) / (Math.pow(10, 14) * tensPow) // 1 cubic m = 3.280839895013123^3 ft
+      } else if (this.toUnit === 'cubic yard (yd³)') {
+        return (inputInCubicMeter * 1307950619179098) / (Math.pow(10, 15) * tensPow) // 1 cubic m = 1.0936132983^3 yd
+      } else if (this.toUnit === 'cubic mile (mi³)') {
+        return (inputInCubicMeter * 2399127585789231) / (Math.pow(10, 25) * tensPow) // 1 cubic m =  0.0062137119223733^3 mi
       } else {
-        // if (this.toUnit == 'cubic meter')
+        // if (this.toUnit == 'cubic meter' || this.toUnit == 'kilolitre (kl)')
         return inputInCubicMeter / tensPow
       }
     },
@@ -647,11 +1479,8 @@ export default {
         case 'Fahrenheit (°F)':
           inputInCelsius = (((input / tensPow - 32) * 5) / 9).toString() // °C = (°F − 32) × 5/9
           inputInCelsius = this.exponentToLarge(inputInCelsius)
-          resultFloatingPointToObject = this.floatingPointNumberToObject(
-            inputInCelsius
-          )
-          inputInCelsius =
-            resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInCelsius)
+          inputInCelsius = resultFloatingPointToObject.inputStrWithoutDecimalPoint
           tensPowCelsius = resultFloatingPointToObject.tensPow
 
           output = this.celsiusToTargetUnit(inputInCelsius, tensPowCelsius)
@@ -660,11 +1489,8 @@ export default {
         case 'Kelvin (K)':
           inputInCelsius = (input / tensPow - 273.15).toString()
           inputInCelsius = this.exponentToLarge(inputInCelsius)
-          resultFloatingPointToObject = this.floatingPointNumberToObject(
-            inputInCelsius
-          )
-          inputInCelsius =
-            resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInCelsius)
+          inputInCelsius = resultFloatingPointToObject.inputStrWithoutDecimalPoint
           tensPowCelsius = resultFloatingPointToObject.tensPow
 
           output = this.celsiusToTargetUnit(inputInCelsius, tensPowCelsius)
@@ -708,9 +1534,7 @@ export default {
 
       // If no units are selected an alert is displayed:
       if (this.fromUnit === 'select unit' || this.toUnit === 'select unit') {
-        alert(
-          'Please choose ' + this.unit.id + ' units from the dropdown options.'
-        )
+        alert('Please choose ' + this.unit.id + ' units from the dropdown options.')
         return
       }
 
@@ -729,9 +1553,7 @@ export default {
         }
         input = this.input
         input = this.exponentToLarge(input)
-        const resultFloatingPointToObject = this.floatingPointNumberToObject(
-          input
-        )
+        const resultFloatingPointToObject = this.floatingPointNumberToObject(input)
         input = resultFloatingPointToObject.inputStrWithoutDecimalPoint
         tensPow = resultFloatingPointToObject.tensPow
       }
@@ -739,6 +1561,8 @@ export default {
       this.input = this.insertWhiteSpaces(this.input)
       if (this.unit.id === 'length') {
         this.lengthConverter(input, tensPow)
+      } else if (this.unit.id === 'area') {
+        this.areaConverter(input, tensPow)
       } else if (this.unit.id === 'volume') {
         this.volumeConverter(input, tensPow)
       } else if (this.unit.id === 'temperature') {
@@ -819,7 +1643,7 @@ button {
 }
 /* ENTITY INDIVIDUAL STYLING: LENGTH */
 .length {
-  background-image: url('../assets/length.png');
+  background: url('../assets/length.png');
   background-size: cover;
   background-position: center;
   -webkit-animation-name: length2;
