@@ -21,11 +21,10 @@ export default {
     ConverterCard,
   },
   created() {
-    //axios
+    // axios
     // .get('http://localhost:3000/events')
     ConverterService.getUnits()
       .then((response) => {
-        console.log(response.data)
         this.units = response.data
       })
       .catch((error) => {
@@ -42,7 +41,8 @@ export default {
 <style lang="scss" scoped>
 .home {
   min-height: 100vh;
-  background: url('../assets/—Pngtree—blue geometric shape with dot_3719431.png') no-repeat;
+  background: url('../assets/—Pngtree—blue geometric shape with dot_3719431.png')
+    no-repeat;
   background-attachment: fixed;
   background-position: top;
 }

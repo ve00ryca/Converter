@@ -1,23 +1,28 @@
 <template>
+  <!-- all the attributes below are extracted from the DB through the parrent component -->
   <div class="converter-card">
-    <router-link :to="{ name: 'converter', params: { unit_name: unit.unit_name } }" class="event-link">
+    <router-link
+      :to="{ name: 'converter', params: { unit_name: unit.unit_name } }"
+      class="event-link"
+    >
       <div class="event-card -shadow">
         <span class="eyebrow"
           ><span>#{{ unit.category }}:</span> {{ unit.description }}</span
         >
         <h4 class="title">{{ unit.title }}</h4>
-        <span>{{ unit.options.length }} units</span>
+        <span>{{ unit.options.length - 1 }} units</span>
       </div>
     </router-link>
   </div>
-  <!-- all the attributes above are extracted from the DB through the parrent component -->
 </template>
 
 <script>
 export default {
+  /** DB data as a prop: {} - receiving each object from the parrent through the DB + API
+   * call(axios), instead of creating n same components each one containg static info in data()
+   */
   props: {
-    unit: Object /** info from DB is a prop: {} - receiving each object from the parrent through the DB+API call(axios),
-    instead of creating n same components each one containg static info in data() */,
+    unit: Object,
   },
 }
 </script>
