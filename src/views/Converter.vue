@@ -14,6 +14,7 @@
               option == 'Metric Units:' ||
               option == 'British Imperial and USC:' ||
               option == 'Litre and multiples:' ||
+              option == 'Tonne and multiples:' ||
               option == 'British and U.S.:'
                 ? true
                 : false
@@ -38,6 +39,7 @@
               option == 'Metric Units:' ||
               option == 'British Imperial and USC:' ||
               option == 'Litre and multiples:' ||
+              option == 'Tonne and multiples:' ||
               option == 'British and U.S.:'
                 ? true
                 : false
@@ -1446,6 +1448,438 @@ export default {
     },
 
     /**
+     * Converter for weight. Converts the user input from one selected unit to another. The arguments
+     * represent the user input after it has been handled by floatingPointNumberToObject().
+     *
+     * @param {string} input   The input as a string containing all characters but the decimal point.
+     * @param {number} tensPow 10 raised to the n-th power, where n is the number of digits after the decimal point.
+     * @return {string} The output converted into the desired unit.
+     *
+     * Notes: First checks for input in E-notation and for floating point input and calls the respective functions.
+     * Then the input is first converted to square gram and the result is passed as an argument in the helper function
+     * gramToTargetUnit(): the conversion to the desired unit is calculated there.
+     * Finally calls formatter function for the output which sets white spaces as thousand separators if necessary.
+     */
+    weightConverter(input, tensPow) {
+      if (this.toUnit === this.fromUnit) {
+        this.output = this.insertWhiteSpaces(input / tensPow)
+        return
+      }
+      let output = '',
+        inputInGram = '',
+        tensPowGram = 0,
+        resultFloatingPointToObject = {}
+      switch (this.fromUnit) {
+        // Metric units:
+        // The power of 10 equals |power of SI prefix| which is noted in the comments
+        // Litre and multiples (1m^3 = 1 kl):
+        case 'yoctogram (yg)': // -24
+          inputInGram = (input / (Math.pow(10, 24) * tensPow)).toString()
+          inputInGram = this.exponentToLarge(inputInGram)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInGram)
+          inputInGram = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowGram = resultFloatingPointToObject.tensPow
+
+          output = this.squareMeterToTargetUnit(inputInGram, tensPowGram)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'zeptogram (zg)': // -21
+          inputInGram = (input / (Math.pow(10, 21) * tensPow)).toString()
+          inputInGram = this.exponentToLarge(inputInGram)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInGram)
+          inputInGram = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowGram = resultFloatingPointToObject.tensPow
+
+          output = this.gramToTargetUnit(inputInGram, tensPowGram)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'attogram (ag)': // -18
+          inputInGram = (input / (Math.pow(10, 18) * tensPow)).toString()
+          inputInGram = this.exponentToLarge(inputInGram)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInGram)
+          inputInGram = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowGram = resultFloatingPointToObject.tensPow
+
+          output = this.gramToTargetUnit(inputInGram, tensPowGram)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'femtogram (fg)': // -15
+          inputInGram = (input / (Math.pow(10, 15) * tensPow)).toString()
+          inputInGram = this.exponentToLarge(inputInGram)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInGram)
+          inputInGram = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowGram = resultFloatingPointToObject.tensPow
+
+          output = this.gramToTargetUnit(inputInGram, tensPowGram)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'picogram (pg)': // -12
+          inputInGram = (input / (Math.pow(10, 12) * tensPow)).toString()
+          inputInGram = this.exponentToLarge(inputInGram)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInGram)
+          inputInGram = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowGram = resultFloatingPointToObject.tensPow
+
+          output = this.gramToTargetUnit(inputInGram, tensPowGram)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'nanogram (ng)': // -9
+          inputInGram = (input / (Math.pow(10, 9) * tensPow)).toString()
+          inputInGram = this.exponentToLarge(inputInGram)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInGram)
+          inputInGram = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowGram = resultFloatingPointToObject.tensPow
+
+          output = this.gramToTargetUnit(inputInGram, tensPowGram)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'microgram (μg)': // -6
+          inputInGram = (input / (Math.pow(10, 6) * tensPow)).toString()
+          inputInGram = this.exponentToLarge(inputInGram)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInGram)
+          inputInGram = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowGram = resultFloatingPointToObject.tensPow
+
+          output = this.gramToTargetUnit(inputInGram, tensPowGram)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'miligram (mg)': // -3
+          inputInGram = (input / (1000 * tensPow)).toString()
+          inputInGram = this.exponentToLarge(inputInGram)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInGram)
+          inputInGram = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowGram = resultFloatingPointToObject.tensPow
+
+          output = this.gramToTargetUnit(inputInGram, tensPowGram)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'centigram (cg)': //-2
+          inputInGram = (input / (100 * tensPow)).toString()
+          inputInGram = this.exponentToLarge(inputInGram)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInGram)
+          inputInGram = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowGram = resultFloatingPointToObject.tensPow
+
+          output = this.gramToTargetUnit(inputInGram, tensPowGram)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'decigram (dg)': // -1
+          inputInGram = (input / (10 * tensPow)).toString()
+          inputInGram = this.exponentToLarge(inputInGram)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInGram)
+          inputInGram = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowGram = resultFloatingPointToObject.tensPow
+
+          output = this.gramToTargetUnit(inputInGram, tensPowGram)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'gram (g)':
+          output = this.gramToTargetUnit(input, tensPow)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'decagram (dag)': // 1
+          inputInGram = ((input * 10) / tensPow).toString()
+          inputInGram = this.exponentToLarge(inputInGram)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInGram)
+          inputInGram = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowGram = resultFloatingPointToObject.tensPow
+
+          output = this.gramToTargetUnit(inputInGram, tensPowGram)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'hectogram (hg)': // 2
+          inputInGram = ((input * 100) / tensPow).toString()
+          inputInGram = this.exponentToLarge(inputInGram)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInGram)
+          inputInGram = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowGram = resultFloatingPointToObject.tensPow
+
+          output = this.gramToTargetUnit(inputInGram, tensPowGram)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'kilogram (kg)': // 3
+          inputInGram = ((input * 1000) / tensPow).toString()
+          inputInGram = this.exponentToLarge(inputInGram)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInGram)
+          inputInGram = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowGram = resultFloatingPointToObject.tensPow
+
+          output = this.gramToTargetUnit(inputInGram, tensPowGram)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'megagram (Mg)': // 6
+          inputInGram = ((input * Math.pow(10, 6)) / tensPow).toString()
+          inputInGram = this.exponentToLarge(inputInGram)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInGram)
+          inputInGram = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowGram = resultFloatingPointToObject.tensPow
+
+          output = this.gramToTargetUnit(inputInGram, tensPowGram)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'gigagram (Gg)': // 9
+          inputInGram = ((input * Math.pow(10, 9)) / tensPow).toString()
+          inputInGram = this.exponentToLarge(inputInGram)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInGram)
+          inputInGram = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowGram = resultFloatingPointToObject.tensPow
+
+          output = this.gramToTargetUnit(inputInGram, tensPowGram)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'teragram (Tg)': // 12
+          inputInGram = ((input * Math.pow(10, 12)) / tensPow).toString()
+          inputInGram = this.exponentToLarge(inputInGram)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInGram)
+          inputInGram = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowGram = resultFloatingPointToObject.tensPow
+
+          output = this.gramToTargetUnit(inputInGram, tensPowGram)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'petagram (Pg)': // 15
+          inputInGram = ((input * Math.pow(10, 15)) / tensPow).toString()
+          inputInGram = this.exponentToLarge(inputInGram)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInGram)
+          inputInGram = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowGram = resultFloatingPointToObject.tensPow
+
+          output = this.gramToTargetUnit(inputInGram, tensPowGram)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'exagram (Eg)': // 18
+          inputInGram = ((input * Math.pow(10, 18)) / tensPow).toString()
+          inputInGram = this.exponentToLarge(inputInGram)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInGram)
+          inputInGram = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowGram = resultFloatingPointToObject.tensPow
+
+          output = this.gramToTargetUnit(inputInGram, tensPowGram)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'zettagram (Zg)': // 21
+          inputInGram = ((input * Math.pow(10, 21)) / tensPow).toString()
+          inputInGram = this.exponentToLarge(inputInGram)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInGram)
+          inputInGram = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowGram = resultFloatingPointToObject.tensPow
+
+          output = this.gramToTargetUnit(inputInGram, tensPowGram)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'yottagram (Yg)': // 24
+          inputInGram = ((input * Math.pow(10, 24)) / tensPow).toString()
+          inputInGram = this.exponentToLarge(inputInGram)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInGram)
+          inputInGram = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowGram = resultFloatingPointToObject.tensPow
+
+          output = this.gramToTargetUnit(inputInGram, tensPowGram)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        // Tonne and multiples:
+        // The power of 10 equals |power of SI prefix| + 6 ;the power of SI prefix is noted in the comments
+        case 'tonne (t)':
+          inputInGram = ((input * Math.pow(10, 6)) / tensPow).toString()
+          inputInGram = this.exponentToLarge(inputInGram)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInGram)
+          inputInGram = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowGram = resultFloatingPointToObject.tensPow
+
+          output = this.gramToTargetUnit(inputInGram, tensPowGram)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'kilotonne (kt)': // 3
+          inputInGram = ((input * Math.pow(10, 9)) / tensPow).toString()
+          inputInGram = this.exponentToLarge(inputInGram)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInGram)
+          inputInGram = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowGram = resultFloatingPointToObject.tensPow
+
+          output = this.gramToTargetUnit(inputInGram, tensPowGram)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'megatonne (Mt)': // 6
+          inputInGram = ((input * Math.pow(10, 12)) / tensPow).toString()
+          inputInGram = this.exponentToLarge(inputInGram)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInGram)
+          inputInGram = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowGram = resultFloatingPointToObject.tensPow
+
+          output = this.gramToTargetUnit(inputInGram, tensPowGram)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'gigatonne (Gt)': // 9
+          inputInGram = ((input * Math.pow(10, 15)) / tensPow).toString()
+          inputInGram = this.exponentToLarge(inputInGram)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInGram)
+          inputInGram = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowGram = resultFloatingPointToObject.tensPow
+
+          output = this.gramToTargetUnit(inputInGram, tensPowGram)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        // British Imperial and USC:
+        case 'inch (in²)':
+          inputInGram = ((input * 64516) / (Math.pow(10, 8) * tensPow)).toString() // 1 square in = 0.0254^2 m
+          inputInGram = this.exponentToLarge(inputInGram)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInGram)
+          inputInGram = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowGram = resultFloatingPointToObject.tensPow
+
+          output = this.squaregramToTargetUnit(inputInGram, tensPowGram)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'foot (ft²)':
+          inputInGram = ((input * 9290304) / (Math.pow(10, 8) * tensPow)).toString() // 1 square ft = 0.3048^2 m
+          inputInGram = this.exponentToLarge(inputInGram)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInGram)
+          inputInGram = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowGram = resultFloatingPointToObject.tensPow
+
+          output = this.gramToTargetUnit(inputInGram, tensPowGram)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'yard (yd²)':
+          inputInGram = ((input * 83612736) / (Math.pow(10, 8) * tensPow)).toString() // 1 square yd = 0.9144^2 m
+          inputInGram = this.exponentToLarge(inputInGram)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInGram)
+          inputInGram = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowGram = resultFloatingPointToObject.tensPow
+
+          output = this.gramToTargetUnit(inputInGram, tensPowGram)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'mile (mi²)':
+          inputInGram = (((input * 2589988110336) / Math.pow(10, 6)) * tensPow).toString() // 1 square mi = 1 609.344^2 m
+          inputInGram = this.exponentToLarge(inputInGram)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInGram)
+          inputInGram = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowGram = resultFloatingPointToObject.tensPow
+
+          output = this.gramToTargetUnit(inputInGram, tensPowGram)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        default:
+          alert('Please choose units from the dropdown menus')
+      }
+    },
+
+    /**
+     * Helper function for weightConverter(). Converts the user input from gram to the desired unit. The
+     * arguments represent the user input after it has been handled by floatingPointNumberToObject().
+     *
+     * @param {string} inputInGram   The input in square gram as a string containing all characters but the
+     *                               decimal point.
+     * @param {number} tensPow 10 raised to the n-th power, where n is the number of digits after the decimal point.
+     * @return {string} The output converted into the desired unit.
+     */
+    gramToTargetUnit(inputInGram, tensPow) {
+      /**
+       * Floating point arithmetic:
+       * GOAL: to have two integer operands at each step -> the brackets are put in a way that this is achieved:
+       * multiplication always comes first, because it can not lead to a floating point result.
+       * Division comes last:
+       * integer / integer = correct result, even if the result is a real number.
+       * However if one of the operands is a real number, the result might be faulty: e.g. 0.100000004 instead of 0.1
+       */
+
+      // Metric units
+      // The power of 10 equals |power of SI prefix| which is noted in the comments
+      if (this.toUnit === 'yoctogram (yg)') {
+        // -24
+        return (inputInGram * Math.pow(10, 24)) / tensPow
+      } else if (this.toUnit === 'zeptogram (zg)') {
+        // -21
+        return (inputInGram * Math.pow(10, 21)) / tensPow
+      } else if (this.toUnit === 'attogram (ag)') {
+        // -18
+        return (inputInGram * Math.pow(10, 18)) / tensPow
+      } else if (this.toUnit === 'femtogram (fg)') {
+        // -15
+        return (inputInGram * Math.pow(10, 15)) / tensPow
+      } else if (this.toUnit === 'picogram (pg)') {
+        // -12
+        return (inputInGram * Math.pow(10, 12)) / tensPow
+      } else if (this.toUnit === 'nanogram (ng)') {
+        // -9
+        return (inputInGram * Math.pow(10, 9)) / tensPow
+      } else if (this.toUnit === 'microgram (μg)') {
+        // -6
+        return (inputInGram * Math.pow(10, 6)) / tensPow
+      } else if (this.toUnit === 'miligram (mg)') {
+        // -3
+        return (inputInGram * 1000) / tensPow
+      } else if (this.toUnit === 'centigram (cg)') {
+        // -2
+        return (inputInGram * 100) / tensPow
+      } else if (this.toUnit === 'decigram (dg)') {
+        // -1
+        return (inputInGram * 10) / tensPow
+      } else if (this.toUnit === 'gram (g)') {
+        return inputInGram / tensPow
+      } else if (this.toUnit === 'decagram (dag)') {
+        // 1
+        return inputInGram / (10 * tensPow)
+      } else if (this.toUnit === 'hectogram (hg)') {
+        // 2
+        return inputInGram / (100 * tensPow)
+      } else if (this.toUnit === 'kilogram (kg)') {
+        // 3
+        return inputInGram / (1000 * tensPow)
+      } else if (this.toUnit === 'megagram (Mg)') {
+        // 6
+        return inputInGram / (Math.pow(10, 6) * tensPow)
+      } else if (this.toUnit === 'gigagram (Gg)') {
+        // 9
+        return inputInGram / (Math.pow(10, 9) * tensPow)
+      } else if (this.toUnit === 'teragram (Tg)') {
+        // 12
+        return inputInGram / (Math.pow(10, 12) * tensPow)
+      } else if (this.toUnit === 'petagram (Pg)') {
+        // 15
+        return inputInGram / (Math.pow(10, 15) * tensPow)
+      } else if (this.toUnit === 'exagram (Eg)') {
+        // 18
+        return inputInGram / (Math.pow(10, 18) * tensPow)
+      } else if (this.toUnit === 'zettagram (Zg)') {
+        // 21
+        return inputInGram / (Math.pow(10, 21) * tensPow)
+      } else if (this.toUnit === 'yottagram (Yg)') {
+        // 24
+        // 1.0000000000000001e-24
+        return inputInGram / (Math.pow(10, 24) * tensPow)
+      }
+      // Tonne and multiples:
+      // The power of 10 equals |power of SI prefix| + 6 ;the power of SI prefix is noted in the comments
+      else if (this.toUnit === 'tonne (t)') {
+        return inputInGram / (Math.pow(10, 6) * tensPow)
+      } else if (this.toUnit === 'kilotonne (kt)') {
+        // 3
+        return inputInGram / (Math.pow(10, 9) * tensPow)
+      } else if (this.toUnit === 'megatonne (Mt)') {
+        // 6
+        return inputInGram / (Math.pow(10, 12) * tensPow)
+      } else if (this.toUnit === 'gigatonne (Gt)') {
+        // 9
+        return inputInGram / (Math.pow(10, 15) * tensPow)
+      }
+      // British and U.S.:
+      else if (this.toUnit === 'inch (in²)') {
+        return (inputInGram * 15500031000062) / (Math.pow(10, 10) * tensPow) // 1 square m = 39.37007874015748^2 in
+      } else if (this.toUnit === 'foot (ft²)') {
+        return (inputInGram * 1076391041670972) / (Math.pow(10, 14) * tensPow) // 1 square m = 3.280839895013123^2 ft
+      } else if (this.toUnit === 'yard (yd²)') {
+        return (inputInGram * 1195990046218605) / (Math.pow(10, 15) * tensPow) // 1 square m = 1.0936132983^2 yd
+      } else if (this.toUnit === 'mile (mi²)') {
+        return (inputInGram * 3861021585424409) / (Math.pow(10, 22) * tensPow) // 1 square m =  0.0062137119223733^2 mi
+      } else {
+        // if (this.toUnit == 'square gram')
+        return inputInGram / tensPow
+      }
+    },
+
+    /**
      * Converter for temperature. Converts the user input from one selected unit to another. The arguments
      * represent the user input after it has been handled by floatingPointNumberToObject().
      *
@@ -1506,10 +1940,10 @@ export default {
     },
 
     /**
-     * Helper function for temperatureConverter(). Converts the user input from cubic meter to the desired unit. The
+     * Helper function for temperatureConverter(). Converts the user input from cubic celsius to the desired unit. The
      * arguments represent the user input after it has been handled by floatingPointNumberToObject().
      *
-     * @param {string} inputInMeter   The input in meter as a string containing all characters but the decimal point.
+     * @param {string} inputInCelsius   The input in celsius as a string containing all characters but the decimal point.
      * @param {number} tensPow 10 raised to the n-th power, where n is the number of digits after the decimal point.
      * @return {string} The output converted into the desired unit.
      */
@@ -1565,6 +1999,8 @@ export default {
         this.areaConverter(input, tensPow)
       } else if (this.unit.id === 'volume') {
         this.volumeConverter(input, tensPow)
+      } else if (this.unit.id === 'weight') {
+        this.weightConverter(input, tensPow)
       } else if (this.unit.id === 'temperature') {
         this.temperatureConverter(input, tensPow)
       } else {
