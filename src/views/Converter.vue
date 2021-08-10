@@ -14,8 +14,14 @@
               option == 'Metric Units:' ||
               option == 'British Imperial and USC:' ||
               option == 'Litre and multiples:' ||
+              option == 'Kilogram and multiples:' ||
               option == 'Tonne and multiples:' ||
-              option == 'British and U.S.:'
+              option == 'Second and multiples:' ||
+              option == 'Common Units:' ||
+              option == 'Astronomical Units:' ||
+              option == 'Natural Units:' ||
+              option == 'British and U.S.:' ||
+              option == 'Other units:'
                 ? true
                 : false
             "
@@ -39,8 +45,14 @@
               option == 'Metric Units:' ||
               option == 'British Imperial and USC:' ||
               option == 'Litre and multiples:' ||
+              option == 'Kilogram and multiples:' ||
               option == 'Tonne and multiples:' ||
-              option == 'British and U.S.:'
+              option == 'Second and multiples:' ||
+              option == 'Common Units:' ||
+              option == 'Astronomical Units:' ||
+              option == 'Natural Units:' ||
+              option == 'British and U.S.:' ||
+              option == 'Other units:'
                 ? true
                 : false
             "

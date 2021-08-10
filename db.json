@@ -67,7 +67,7 @@
           "square exameter (Em²)",
           "square zettameter (Zm²)",
           "square yottameter (Ym²)",
-          "British Imperial and USC:",
+          "British and U.S.:",
           "square inch (in²)",
           "square foot (ft²)",
           "square yard (yd²)",
@@ -128,7 +128,7 @@
         "description": "Convert units for mass and weight",
         "options": [
           "select unit",
-          "Metric Units:",
+          "Kilogram and multiples:",
           "yoctogram (yg)",
           "zeptogram (zg)",
           "attogram (ag)",
@@ -155,12 +155,12 @@
           "kilotonne (kt)",
           "megatonne (Mt)",
           "gigatonne (Gt)",
-          "carrat (ct)",
-          "atomic mass unit (amu)",
-          "British Imperial and USC:",
+          "British and U.S.:",
           "pound (lb)",
           "ounce (oz)",
-          "ADD MORE"
+          "Other units:",
+          "carrat (ct)",
+          "atomic mass unit (amu)"
         ]
       },
       
@@ -172,7 +172,7 @@
         "description": "Convert units for time",
         "options": [
           "select unit",
-          "Common Units:",
+          "Second and multiples:",
           "yoctosecond (ys)",
           "zeptosecond (zs)",
           "attosecond (as)",
@@ -194,6 +194,7 @@
           "exasecond (Es)",
           "zettasecond (Zs)",
           "yottasecond (Ys)",
+          "Common Units:",
           "moment /avg./",
           "minute (min)",
           "hour (h)",
@@ -208,13 +209,9 @@
           "decade (dec)",
           "century (c)",
           "millenium",
-          "Astronomical:",
-          "inch (in)",
-          "foot (ft)",
-          "yard (yd)",
-          "Natural:", 
-          "Planc time",
-          "ADD MORE: <-> area,volume and more"
+          "Astronomical Units:",
+          "Natural Units:", 
+          "Planc time"
         ]
       },
       {
@@ -226,33 +223,31 @@
         "options": [
           "select unit",
           "Metric Units:",
-          "yoctometer (ym)",
-          "zeptometer (zm)",
-          "attometer (am)",
-          "femtometer (fm)",
-          "picometer (nm)",
-          "nanometer (nm)",
-          "micrometer / micron (μm)",
-          "milimeter (mm)",
-          "centimeter (cm)",
-          "decimeter (dm)",
-          "meter (m)",
-          "decameter (dam)",
-          "hectometer (nm)",
-          "kilometer (km)",
-          "megameter (Mm)",
-          "gigameter (Gm)",
-          "terameter (Tm)",
-          "petameter (Pm)",
-          "exameter (Em)",
-          "zettameter (Zm)",
-          "yottameter (Ym)",
-          "British Imperial and USC:",
-          "inch (in)",
-          "foot (ft)",
-          "yard (yd)",
-          "mile (mi)", 
-          "ADD MORE: <-> area,volume and more"
+          "meter per second (m/s)",
+          "meter per minute (m/m)",
+          "meter per hour (m/h)",
+          "meter per year (m/y)",
+          "kilometer per second (km/s)",
+          "kilometer per minute (km/m)",
+          "kilometer per hour (km/h)",
+          "kilometer per year (km/y)",
+          "British and U.S.:",
+          "inch per second (in/s)",
+          "inch per minute (in/m)",
+          "inch per hour (in/h)",
+          "inch per year (in/y)",
+          "foot per second (ft/s)",
+          "foot per minute (ft/m)",
+          "foot per hour (ft/h)",
+          "foot per year (ft/y)",
+          "yard per second (yd/s)",
+          "yard per minute (yd/m)",
+          "yard per hour (yd/h)",
+          "yard per year (yd/y)",
+          "mile per second (mi/s)", 
+          "mile per minute (mi/m)", 
+          "mile per hour (mi/h)", 
+          "mile per year (mi/y)"
         ]
       },
       {
@@ -265,8 +260,7 @@
           "select unit",
           "Celsius (°C)",
           "Fahrenheit (°F)",
-          "Kelvin (K)",
-          "ADD AT LEAST TWO MORE"
+          "Kelvin (K)"
         ]
       }
     ]
