@@ -565,6 +565,8 @@ export default {
         return (inputInMeter * 100) / tensPow
       } else if (this.toUnit === 'decimeter (dm)') {
         return (inputInMeter * 10) / tensPow
+      } else if (this.toUnit === 'meter (m)') {
+        return inputInMeter / tensPow
       } else if (this.toUnit === 'decameter (dam)') {
         return inputInMeter / (10 * tensPow)
       } else if (this.toUnit === 'hectometer (hm)') {
@@ -596,8 +598,8 @@ export default {
       } else if (this.toUnit === 'mile (mi)') {
         return (inputInMeter * 62137119223733) / (Math.pow(10, 17) * tensPow) // 1m =  0.0062137119223733 mi
       } else {
-        // if (this.toUnit == 'meter (m)')
-        return inputInMeter / tensPow
+        alert('Please choose units from the dropdown menus')
+        return 0
       }
     },
 
@@ -978,8 +980,8 @@ export default {
       } else if (this.toUnit === 'square mile (mi²)') {
         return (inputInSquareMeter * 3861021585424409) / (Math.pow(10, 22) * tensPow) // 1 square m =  0.0062137119223733^2 mi
       } else {
-        // if (this.toUnit == 'square meter')
-        return inputInSquareMeter / tensPow
+        alert('Please choose units from the dropdown menus')
+        return 0
       }
     },
 
@@ -1355,6 +1357,9 @@ export default {
       } else if (this.toUnit === 'cubic decimeter (dm³)') {
         // -1
         return (inputInCubicMeter * 1000) / tensPow
+      } else if (this.toUnit === 'cubic meter (m³)') {
+        // 1m^3 = 1 kl
+        return inputInCubicMeter / tensPow
       } else if (this.toUnit === 'cubic decameter (dam³)') {
         // 1
         return inputInCubicMeter / (1000 * tensPow)
@@ -1442,8 +1447,8 @@ export default {
       } else if (this.toUnit === 'cubic mile (mi³)') {
         return (inputInCubicMeter * 2399127585789231) / (Math.pow(10, 25) * tensPow) // 1 cubic m =  0.0062137119223733^3 mi
       } else {
-        // if (this.toUnit == 'cubic meter' || this.toUnit == 'kilolitre (kl)')
-        return inputInCubicMeter / tensPow
+        alert('Please choose units from the dropdown menus')
+        return 0
       }
     },
 
@@ -1480,7 +1485,7 @@ export default {
           inputInGram = resultFloatingPointToObject.inputStrWithoutDecimalPoint
           tensPowGram = resultFloatingPointToObject.tensPow
 
-          output = this.squareMeterToTargetUnit(inputInGram, tensPowGram)
+          output = this.gramToTargetUnit(inputInGram, tensPowGram)
           this.output = this.insertWhiteSpaces(output)
           break
         case 'zeptogram (zg)': // -21
@@ -1874,8 +1879,332 @@ export default {
       } else if (this.toUnit === 'mile (mi²)') {
         return (inputInGram * 3861021585424409) / (Math.pow(10, 22) * tensPow) // 1 square m =  0.0062137119223733^2 mi
       } else {
-        // if (this.toUnit == 'square gram')
-        return inputInGram / tensPow
+        alert('Please choose units from the dropdown menus')
+        return 0
+      }
+    },
+
+    /**
+     * Converter for time. Converts the user input from one selected unit to another. The arguments
+     * represent the user input after it has been handled by floatingPointNumberToObject().
+     *
+     * @param {string} input   The input as a string containing all characters but the decimal point.
+     * @param {number} tensPow 10 raised to the n-th power, where n is the number of digits after the decimal point.
+     * @return {string} The output converted into the desired unit.
+     *
+     * Notes: First checks for input in E-notation and for floating point input and calls the respective functions.
+     * Then the input is first converted to square gram and the result is passed as an argument in the helper function
+     * secondToTargetUnit(): the conversion to the desired unit is calculated there.
+     * Finally calls formatter function for the output which sets white spaces as thousand separators if necessary.
+     */
+    timeConverter(input, tensPow) {
+      if (this.toUnit === this.fromUnit) {
+        this.output = this.insertWhiteSpaces(input / tensPow)
+        return
+      }
+      let output = '',
+        inputInSecond = '',
+        tensPowSecond = 0,
+        resultFloatingPointToObject = {}
+      switch (this.fromUnit) {
+        // Metric units:
+        // The power of 10 equals |power of SI prefix| which is noted in the comments
+        case 'yoctosecond (ys)': // -24
+          inputInSecond = (input / (Math.pow(10, 24) * tensPow)).toString()
+          inputInSecond = this.exponentToLarge(inputInSecond)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSecond)
+          inputInSecond = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSecond = resultFloatingPointToObject.tensPow
+
+          output = this.secondToTargetUnit(inputInSecond, tensPowSecond)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'zeptosecond (zs)': // -21
+          inputInSecond = (input / (Math.pow(10, 21) * tensPow)).toString()
+          inputInSecond = this.exponentToLarge(inputInSecond)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSecond)
+          inputInSecond = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSecond = resultFloatingPointToObject.tensPow
+
+          output = this.secondToTargetUnit(inputInSecond, tensPowSecond)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'attosecond (as)': // -18
+          inputInSecond = (input / (Math.pow(10, 18) * tensPow)).toString()
+          inputInSecond = this.exponentToLarge(inputInSecond)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSecond)
+          inputInSecond = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSecond = resultFloatingPointToObject.tensPow
+
+          output = this.seoncToTargetUnit(inputInSecond, tensPowSecond)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'femtosecond (fs)': // -15
+          inputInSecond = (input / (Math.pow(10, 15) * tensPow)).toString()
+          inputInSecond = this.exponentToLarge(inputInSecond)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSecond)
+          inputInSecond = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSecond = resultFloatingPointToObject.tensPow
+
+          output = this.seoncToTargetUnit(inputInSecond, tensPowSecond)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'picosecond (ps)': // -12
+          inputInSecond = (input / (Math.pow(10, 12) * tensPow)).toString()
+          inputInSecond = this.exponentToLarge(inputInSecond)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSecond)
+          inputInSecond = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSecond = resultFloatingPointToObject.tensPow
+
+          output = this.seoncToTargetUnit(inputInSecond, tensPowSecond)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'nanosecond (ns)': // -9
+          inputInSecond = (input / (Math.pow(10, 9) * tensPow)).toString()
+          inputInSecond = this.exponentToLarge(inputInSecond)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSecond)
+          inputInSecond = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSecond = resultFloatingPointToObject.tensPow
+
+          output = this.secondToTargetUnit(inputInSecond, tensPowSecond)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'microsecond (μs)': // -6
+          inputInSecond = (input / (Math.pow(10, 6) * tensPow)).toString()
+          inputInSecond = this.exponentToLarge(inputInSecond)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSecond)
+          inputInSecond = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSecond = resultFloatingPointToObject.tensPow
+
+          output = this.secondToTargetUnit(inputInSecond, tensPowSecond)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'milisecond (ms)': // -3
+          inputInSecond = (input / (1000 * tensPow)).toString()
+          inputInSecond = this.exponentToLarge(inputInSecond)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSecond)
+          inputInSecond = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSecond = resultFloatingPointToObject.tensPow
+
+          output = this.secondToTargetUnit(inputInSecond, tensPowSecond)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'centisecond (cs)': //-2
+          inputInSecond = (input / (100 * tensPow)).toString()
+          inputInSecond = this.exponentToLarge(inputInSecond)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSecond)
+          inputInSecond = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSecond = resultFloatingPointToObject.tensPow
+
+          output = this.secondToTargetUnit(inputInSecond, tensPowSecond)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'decisecond (ds)': // -1
+          inputInSecond = (input / (10 * tensPow)).toString()
+          inputInSecond = this.exponentToLarge(inputInSecond)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSecond)
+          inputInSecond = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSecond = resultFloatingPointToObject.tensPow
+
+          output = this.secondToTargetUnit(inputInSecond, tensPowSecond)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'second (s)':
+          output = this.secondToTargetUnit(input, tensPow)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'decasecond (das)': // 1
+          inputInSecond = ((input * 10) / tensPow).toString()
+          inputInSecond = this.exponentToLarge(inputInSecond)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSecond)
+          inputInSecond = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSecond = resultFloatingPointToObject.tensPow
+
+          output = this.secondToTargetUnit(inputInSecond, tensPowSecond)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'hectosecond (hs)': // 2
+          inputInSecond = ((input * 100) / tensPow).toString()
+          inputInSecond = this.exponentToLarge(inputInSecond)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSecond)
+          inputInSecond = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSecond = resultFloatingPointToObject.tensPow
+
+          output = this.secondToTargetUnit(inputInSecond, tensPowSecond)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'kilosecond (ks)': // 3
+          inputInSecond = ((input * 1000) / tensPow).toString()
+          inputInSecond = this.exponentToLarge(inputInSecond)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSecond)
+          inputInSecond = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSecond = resultFloatingPointToObject.tensPow
+
+          output = this.secondToTargetUnit(inputInSecond, tensPowSecond)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'megasecond (Ms)': // 6
+          inputInSecond = ((input * Math.pow(10, 6)) / tensPow).toString()
+          inputInSecond = this.exponentToLarge(inputInSecond)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSecond)
+          inputInSecond = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSecond = resultFloatingPointToObject.tensPow
+
+          output = this.secondToTargetUnit(inputInSecond, tensPowSecond)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'gigasecond (Gs)': // 9
+          inputInSecond = ((input * Math.pow(10, 9)) / tensPow).toString()
+          inputInSecond = this.exponentToLarge(inputInSecond)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSecond)
+          inputInSecond = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSecond = resultFloatingPointToObject.tensPow
+
+          output = this.secondToTargetUnit(inputInSecond, tensPowSecond)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'terasecond (Ts)': // 12
+          inputInSecond = ((input * Math.pow(10, 12)) / tensPow).toString()
+          inputInSecond = this.exponentToLarge(inputInSecond)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSecond)
+          inputInSecond = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSecond = resultFloatingPointToObject.tensPow
+
+          output = this.secondToTargetUnit(inputInSecond, tensPowSecond)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'petasecond (Ps)': // 15
+          inputInSecond = ((input * Math.pow(10, 15)) / tensPow).toString()
+          inputInSecond = this.exponentToLarge(inputInSecond)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSecond)
+          inputInSecond = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSecond = resultFloatingPointToObject.tensPow
+
+          output = this.secondToTargetUnit(inputInSecond, tensPowSecond)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'exasecond (Es)': // 18
+          inputInSecond = ((input * Math.pow(10, 18)) / tensPow).toString()
+          inputInSecond = this.exponentToLarge(inputInSecond)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSecond)
+          inputInSecond = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSecond = resultFloatingPointToObject.tensPow
+
+          output = this.secondToTargetUnit(inputInSecond, tensPowSecond)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'zettasecond (Zs)': // 21
+          inputInSecond = ((input * Math.pow(10, 21)) / tensPow).toString()
+          inputInSecond = this.exponentToLarge(inputInSecond)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSecond)
+          inputInSecond = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSecond = resultFloatingPointToObject.tensPow
+
+          output = this.secondToTargetUnit(inputInSecond, tensPowSecond)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        case 'yottasecond (Ys)': // 24
+          inputInSecond = ((input * Math.pow(10, 24)) / tensPow).toString()
+          inputInSecond = this.exponentToLarge(inputInSecond)
+          resultFloatingPointToObject = this.floatingPointNumberToObject(inputInSecond)
+          inputInSecond = resultFloatingPointToObject.inputStrWithoutDecimalPoint
+          tensPowSecond = resultFloatingPointToObject.tensPow
+
+          output = this.secondToTargetUnit(inputInSecond, tensPowSecond)
+          this.output = this.insertWhiteSpaces(output)
+          break
+        default:
+          alert('Please choose units from the dropdown menus')
+      }
+    },
+
+    /**
+     * Helper function for timeConverter(). Converts the user input from second to the desired unit. The
+     * arguments represent the user input after it has been handled by floatingPointNumberToObject().
+     *
+     * @param {string} inputInSecond   The input in square second as a string containing all characters but the
+     *                               decimal point.
+     * @param {number} tensPow 10 raised to the n-th power, where n is the number of digits after the decimal point.
+     * @return {string} The output converted into the desired unit.
+     */
+    secondToTargetUnit(inputInSecond, tensPow) {
+      /**
+       * Floating point arithmetic:
+       * GOAL: to have two integer operands at each step -> the brackets are put in a way that this is achieved:
+       * multiplication always comes first, because it can not lead to a floating point result.
+       * Division comes last:
+       * integer / integer = correct result, even if the result is a real number.
+       * However if one of the operands is a real number, the result might be faulty: e.g. 0.100000004 instead of 0.1
+       */
+
+      // Metric units
+      // The power of 10 equals |power of SI prefix| which is noted in the comments
+      if (this.toUnit === 'yoctosecond (ys)') {
+        // -24
+        return (inputInSecond * Math.pow(10, 24)) / tensPow
+      } else if (this.toUnit === 'zeptosecond (zs)') {
+        // -21
+        return (inputInSecond * Math.pow(10, 21)) / tensPow
+      } else if (this.toUnit === 'attosecond (as)') {
+        // -18
+        return (inputInSecond * Math.pow(10, 18)) / tensPow
+      } else if (this.toUnit === 'femtosecond (fs)') {
+        // -15
+        return (inputInSecond * Math.pow(10, 15)) / tensPow
+      } else if (this.toUnit === 'picosecond (ps)') {
+        // -12
+        return (inputInSecond * Math.pow(10, 12)) / tensPow
+      } else if (this.toUnit === 'nanosecond (ns)') {
+        // -9
+        return (inputInSecond * Math.pow(10, 9)) / tensPow
+      } else if (this.toUnit === 'microsecond (μs)') {
+        // -6
+        return (inputInSecond * Math.pow(10, 6)) / tensPow
+      } else if (this.toUnit === 'milisecond (ms)') {
+        // -3
+        return (inputInSecond * 1000) / tensPow
+      } else if (this.toUnit === 'centisecond (cs)') {
+        // -2
+        return (inputInSecond * 100) / tensPow
+      } else if (this.toUnit === 'decisecond (ds)') {
+        // -1
+        return (inputInSecond * 10) / tensPow
+      } else if (this.toUnit === 'second (s)') {
+        return inputInSecond / tensPow
+      } else if (this.toUnit === 'decasecond (das)') {
+        // 1
+        return inputInSecond / (10 * tensPow)
+      } else if (this.toUnit === 'hectosecond (hs)') {
+        // 2
+        return inputInSecond / (100 * tensPow)
+      } else if (this.toUnit === 'kilosecond (ks)') {
+        // 3
+        return inputInSecond / (1000 * tensPow)
+      } else if (this.toUnit === 'megasecond (Ms)') {
+        // 6
+        return inputInSecond / (Math.pow(10, 6) * tensPow)
+      } else if (this.toUnit === 'gigasecond (Gs)') {
+        // 9
+        return inputInSecond / (Math.pow(10, 9) * tensPow)
+      } else if (this.toUnit === 'terasecond (Ts)') {
+        // 12
+        return inputInSecond / (Math.pow(10, 12) * tensPow)
+      } else if (this.toUnit === 'petasecond (Ps)') {
+        // 15
+        return inputInSecond / (Math.pow(10, 15) * tensPow)
+      } else if (this.toUnit === 'exasecond (Es)') {
+        // 18
+        return inputInSecond / (Math.pow(10, 18) * tensPow)
+      } else if (this.toUnit === 'zettasecond (Zs)') {
+        // 21
+        return inputInSecond / (Math.pow(10, 21) * tensPow)
+      } else if (this.toUnit === 'yottasecond (Ys)') {
+        // 24
+        // 1.0000000000000001e-24
+        return inputInSecond / (Math.pow(10, 24) * tensPow)
+      } else {
+        alert('Please choose units from the dropdown menus')
+        return 0
       }
     },
 
@@ -2001,6 +2330,8 @@ export default {
         this.volumeConverter(input, tensPow)
       } else if (this.unit.id === 'weight') {
         this.weightConverter(input, tensPow)
+      } else if (this.unit.id === 'time') {
+        this.timeConverter(input, tensPow)
       } else if (this.unit.id === 'temperature') {
         this.temperatureConverter(input, tensPow)
       } else {
